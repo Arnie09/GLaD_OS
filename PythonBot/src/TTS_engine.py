@@ -5,7 +5,9 @@ from playsound import playsound
 
 class TTS():
 
-    def __init__(self, message):
+    def __init__(self, message,counter):
+
+        self.counter = counter
         self.message = message
         self.play()
   
@@ -13,7 +15,10 @@ class TTS():
     def play(self):
         language = 'en'
         myobj = gTTS(text=self.message, lang=language, slow=False) 
-        myobj.save(os.path.join(sys.path[0],"audio_responses","welcome.mp3"))
-        playsound(os.path.join(sys.path[0],"audio_responses","welcome.mp3"))
+        myobj.save("message"+str(self.counter)+".mp3")
+        playsound("message"+str(self.counter)+".mp3",True)
+        os.remove("message"+str(self.counter)+".mp3")
+
+
 
   

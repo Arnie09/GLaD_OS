@@ -20,6 +20,7 @@ class Robot:
         socket_object.listen(5)      
         print ("socket is listening")            
         
+        counter = 0
         while True: 
             connection, addr = socket_object.accept()      
             #print (('Got connection from'), addr )
@@ -30,7 +31,8 @@ class Robot:
             print(message)
 
             if("TURN" in message or "LIGHT" in message or "FAN" in message):
-                iotControl_obj =iotControl(message)
+                iotControl_obj =iotControl(message,counter)
+                counter+=1
 
             elif("PLAY" in message):
                 self.play_anthem()
@@ -38,6 +40,7 @@ class Robot:
                 self.playfromYoutube()
 
             connection.close() 
+            
 
     def play_anthem(self):
 
