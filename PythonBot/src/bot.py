@@ -5,6 +5,7 @@ import threading
 from playsound import playsound
 import os
 import sys
+from dialogflow_class import DialogFlow
 
 class Robot:
 
@@ -12,6 +13,7 @@ class Robot:
         self.listener()
 
     def listener(self):
+
         socket_object = socket.socket()          
         port = 12345                
         socket_object.bind(('', port))         
@@ -34,10 +36,20 @@ class Robot:
                 iotControl_obj =iotControl(message,counter)
                 counter+=1
 
-            elif("PLAY" in message):
+            elif("PLAY" in message and "SONG" in message):
                 self.play_anthem()
             elif("PLAY" in message and "SONG" not in message):
                 self.playfromYoutube()
+                '''add other functions for which basic tasks are done using custom scripts like email'''
+                '''Some example commands are - CHECK MY EMAIL - for which some gmail api needs to be integrated'''
+                ''' CALCULATE - make a universal calculation bot in python'''
+                ''' ADD to playlist -  ability to add songs to playlists'''
+                '''play a specific playlist'''
+                '''take reminders'''
+                '''integrating dialog flow here'''
+            else:
+                df_obj = DialogFlow(message)
+
 
             connection.close() 
             
