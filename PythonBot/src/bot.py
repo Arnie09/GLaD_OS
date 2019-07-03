@@ -49,6 +49,9 @@ class Robot:
                 '''integrating dialog flow here'''
             else:
                 df_obj = DialogFlow(message)
+                if(df_obj.response):
+                    TTS(df_obj.response,counter)
+                    counter+=1
 
 
             connection.close() 
