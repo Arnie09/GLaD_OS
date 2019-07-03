@@ -1,8 +1,11 @@
 package com.example.glad_os;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -22,12 +25,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -242,6 +246,14 @@ public class MainActivity extends AppCompatActivity
 
         String text = matches.get(0);
         returnedText.setText(text);
+        WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(WIFI_SERVICE);
+        DhcpInfo d = wifiManager.getDhcpInfo();
+        String ip = String.valueOf(intToIp(d.ipAddress));
+//        Log.i("IPADDRESS: ",String.valueOf(intToIp(d.ipAddress)));
+
+
+        MessageSender messageSender = new MessageSender();
+        messageSender.execute(text,ip);
 
         recordButtonStatus = false;
         fab.setBackground(getDrawable(R.drawable.microphone_button_off));
@@ -289,4 +301,11 @@ public class MainActivity extends AppCompatActivity
         }
         return message;
     }
+    public String intToIp(int i) {
+        return (i & 0xFF) + "." +
+                ((i >> 8 ) & 0xFF) + "." +
+                ((i >> 16) & 0xFF) + "." +
+                ((i >> 24) & 0xFF);
+    }
+
 }
