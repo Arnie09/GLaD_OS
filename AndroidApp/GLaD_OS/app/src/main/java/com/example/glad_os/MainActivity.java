@@ -1,11 +1,8 @@
 package com.example.glad_os;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -36,10 +33,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -282,14 +275,7 @@ public class MainActivity extends AppCompatActivity
 
         String text = matches.get(0);
         returnedText.setText(text);
-//        WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(WIFI_SERVICE);
-//        DhcpInfo d = wifiManager.getDhcpInfo();
-//        String ip = String.valueOf(intToIp(d.ipAddress));
-////        Log.i("IPADDRESS: ",String.valueOf(intToIp(d.ipAddress)));
-//
-//
-//        MessageSender messageSender = new MessageSender();
-//        messageSender.execute(text,ip);
+
         String topic = "GladOs/messages";
         String payload = text;
         byte[] encodedPayload = new byte[0];
