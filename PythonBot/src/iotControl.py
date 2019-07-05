@@ -5,6 +5,7 @@ import sys
 class iotControl():
 
     def __init__(self,message,counter):
+        print("Here")
         self.message = message
         self.counter = counter
         self.determine()
