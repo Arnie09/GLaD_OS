@@ -28,6 +28,14 @@ import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private String LOG_TAG = "SpeechRecognizer";
     Boolean recordButtonStatus;
     FloatingActionButton fab;
+    MqttAndroidClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +110,33 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        /* Establishing Mqtt client connection*/
+
+        String clientId = MqttClient.generateClientId();
+        client =
+                new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
+                        clientId);
+
+        try {
+            IMqttToken token = client.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    Toast.makeText(MainActivity.this, "Connected to server!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Toast.makeText(MainActivity.this, "Failed to connect to server!", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -246,14 +282,24 @@ public class MainActivity extends AppCompatActivity
 
         String text = matches.get(0);
         returnedText.setText(text);
-        WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(WIFI_SERVICE);
-        DhcpInfo d = wifiManager.getDhcpInfo();
-        String ip = String.valueOf(intToIp(d.ipAddress));
-//        Log.i("IPADDRESS: ",String.valueOf(intToIp(d.ipAddress)));
-
-
-        MessageSender messageSender = new MessageSender();
-        messageSender.execute(text,ip);
+//        WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(WIFI_SERVICE);
+//        DhcpInfo d = wifiManager.getDhcpInfo();
+//        String ip = String.valueOf(intToIp(d.ipAddress));
+////        Log.i("IPADDRESS: ",String.valueOf(intToIp(d.ipAddress)));
+//
+//
+//        MessageSender messageSender = new MessageSender();
+//        messageSender.execute(text,ip);
+        String topic = "GladOs/messages";
+        String payload = text;
+        byte[] encodedPayload = new byte[0];
+        try {
+            encodedPayload = payload.getBytes("UTF-8");
+            MqttMessage message = new MqttMessage(encodedPayload);
+            client.publish(topic, message);
+        } catch (UnsupportedEncodingException | MqttException e) {
+            e.printStackTrace();
+        }
 
         recordButtonStatus = false;
         fab.setBackground(getDrawable(R.drawable.microphone_button_off));
