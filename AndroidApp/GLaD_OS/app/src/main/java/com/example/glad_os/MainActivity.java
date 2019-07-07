@@ -33,7 +33,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener ,RecognitionListener {
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     Boolean recordButtonStatus;
     FloatingActionButton fab;
     MqttAndroidClient client;
+    DatabaseHandler databaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
+        databaseHandler = new DatabaseHandler(this);
 
         returnedText = (TextView) findViewById(R.id.resultText);
         recordButtonStatus = false;
@@ -93,6 +98,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 Snackbar.make(view, "Recording audio", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
             }
         });
 
@@ -174,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_about) {
             // Handle the camera action
         } else if (id == R.id.nav_history) {
-
+            startActivity(new Intent(getApplicationContext(), HistoryActivity.class));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -286,6 +292,12 @@ public class MainActivity extends AppCompatActivity
         } catch (UnsupportedEncodingException | MqttException e) {
             e.printStackTrace();
         }
+
+        //making database entry for the new command
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Date dateobj = new Date();
+        String currDate = df.format(dateobj);
+        databaseHandler.insertData(payload,currDate);
 
         recordButtonStatus = false;
         fab.setBackground(getDrawable(R.drawable.microphone_button_off));
