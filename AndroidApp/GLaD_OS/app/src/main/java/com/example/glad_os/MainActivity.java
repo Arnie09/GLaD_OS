@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     MqttAndroidClient client;
     DatabaseHandler databaseHandler;
+    TextView text_input;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
+        text_input = findViewById(R.id.inputText);
         databaseHandler = new DatabaseHandler(this);
 
         returnedText = (TextView) findViewById(R.id.resultText);
@@ -135,6 +137,17 @@ public class MainActivity extends AppCompatActivity
             });
         } catch (MqttException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void TextSend(View view){
+
+        String text = text_input.getText().toString();
+        if(text.length()>0){
+            sendMessageMQTT(text);
+        }
+        else{
+            Toast.makeText(this, "Please enter some data into the field before sending", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -282,6 +295,13 @@ public class MainActivity extends AppCompatActivity
         String text = matches.get(0);
         returnedText.setText(text);
 
+        sendMessageMQTT(text);
+
+        recordButtonStatus = false;
+        fab.setBackground(getDrawable(R.drawable.microphone_button_off));
+    }
+
+    public void sendMessageMQTT(String text){
         String topic = "GladOs/messages";
         String payload = text;
         byte[] encodedPayload = new byte[0];
@@ -298,9 +318,6 @@ public class MainActivity extends AppCompatActivity
         Date dateobj = new Date();
         String currDate = df.format(dateobj);
         databaseHandler.insertData(payload,currDate);
-
-        recordButtonStatus = false;
-        fab.setBackground(getDrawable(R.drawable.microphone_button_off));
     }
 
     @Override
