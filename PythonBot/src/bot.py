@@ -57,6 +57,7 @@ while(True):
                     print("HI")
                     iotControl_obj =iotControl(message_main,counter)
                     counter+=1
+                    del iotControl_obj
 
         elif("PLAY" in message_main and "SONG" in message_main):
             play_anthem()

@@ -28,8 +28,9 @@ class iotControl():
 
         elif "OFF" in self.message:
             '''turn lights off'''
-            TTS("Turning lights off!",self.counter)
-
+            obj = TTS("Turning lights off!",self.counter)
+            del obj
+            
         
         
 
