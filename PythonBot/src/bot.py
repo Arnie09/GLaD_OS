@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 from iotControl import iotControl
 from TTS_engine import TTS
 import threading
-from playsound import playsound
+import pygame
 import os
 import sys
 from dialogflow_class import DialogFlow
@@ -45,7 +45,12 @@ def play_anthem():
 
 def function_that_play_still_alive():
 
-    playsound(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.mp3"))
+    pygame.mixer.init()
+    pygame.mixer.music.load(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.mp3"))
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+        continue
+    pygame.mixer.quit()
 
 
 while(True):

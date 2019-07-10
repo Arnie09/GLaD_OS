@@ -1,7 +1,6 @@
 import os
 import sys
 from gtts import gTTS 
-from playsound import playsound
 import pygame
 
 class TTS():
