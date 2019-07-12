@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "525373783278",
+    "firebase_url": "https://glados-c2913.firebaseio.com",
+    "project_id": "glados-c2913",
+    "storage_bucket": "glados-c2913.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525373783278:android:6f2124249c891cb8",
+        "android_client_info": {
+          "package_name": "com.example.glad_os"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525373783278-ij8dq3ca7obm2inu1qlos9l0cuermcsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoX4MsYRjqm6lBnBkWE4mGG8Ye3MEb1pQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525373783278-ij8dq3ca7obm2inu1qlos9l0cuermcsp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
