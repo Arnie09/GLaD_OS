@@ -48,17 +48,10 @@ def mqttclient_to_get_userid():
         print("onexecute")
         client.disconnect
         mqtt_thred_to_get_userid.exit()
-        # with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file__:
-        #         data = {"username":userid }
-        #         user_id_file__.seek(0)
-        #         json.dump(data,user_id_file__)
-        #         user_id_file__.truncate()
-
-        
-    
+   
     def on_connect(client,userdata,flags,rc):
         
-        print("Subscribed to channel user id:")
+        print("Subscribed to channel user id")
         client.subscribe("GladOs/userid")
 
     def on_message(client,userdata,mssg):
@@ -70,8 +63,6 @@ def mqttclient_to_get_userid():
             user_id = id
 
         execute()
-
-            
 
     client = mqtt.Client()
 
@@ -85,6 +76,9 @@ def mqttclient_to_get_userid():
 
 '''this is the beginning of the script'''
 
+'''initially we check whether the user had loggin in before or not'''
+'''if he had then we will use that logged in username and proceed'''
+'''otherwise the mqtt client listens to the userid channel to receive the username from phone'''
 with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
     data = json.load(user_id_file)
     user_id = data["username"]
@@ -93,7 +87,8 @@ with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
         mqtt_thred_to_get_userid = threading.Thread(target = mqttclient_to_get_userid)
         mqtt_thred_to_get_userid.start()    
 
-print("I am here ")
+'''this loop checks whether the username had been passed or not.'''
+'''if new username is passed it is written onto disk'''
 while(True):
     if(len(user_id)>0):
         with open(os.path.join(sys.path[0],"assets/user_id.json"),'r+') as user_id_file:
@@ -102,8 +97,8 @@ while(True):
             json.dump(data,user_id_file)
             user_id_file.truncate()
         break
-            
-print("I am here now")
+
+'''calling the main message thread from here'''         
 mqtt_thred = threading.Thread(target = mqttclient)
 mqtt_thred.start()
 
@@ -121,8 +116,6 @@ def function_that_play_still_alive():
     while pygame.mixer.music.get_busy() == True:
         continue
     pygame.mixer.quit()
-
-
 
 while(True):
 
