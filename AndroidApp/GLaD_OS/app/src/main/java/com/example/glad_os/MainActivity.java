@@ -70,12 +70,7 @@ public class MainActivity extends AppCompatActivity
     MqttAndroidClient client;
     DatabaseHandler databaseHandler;
     TextView text_input;
-    Button setButton;
-    PopupWindow popupWindow;
-    ConstraintLayout constraintLayout;
-    TextView username_suggestion;
-    LinearLayout linearLayout;
-    DrawerLayout drawerLayout;
+    String user_id;
 
     public String loadJSONFromAsset() {
         String json = null;
@@ -100,10 +95,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
-        constraintLayout = findViewById(R.id.constraintlayout);
-        linearLayout = findViewById(R.id.linearLayout);
-        drawerLayout = findViewById(R.id.drawer_layout);
-
 
 
         text_input = findViewById(R.id.inputText);
@@ -113,6 +104,7 @@ public class MainActivity extends AppCompatActivity
         recordButtonStatus = false;
         currentPartialText = "";
         currentConfirmedText = "";
+        user_id = "";
 
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         Log.i(LOG_TAG, "isRecognitionAvailable: " + SpeechRecognizer.isRecognitionAvailable(this));
@@ -205,6 +197,7 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which) {
                         String m_Text = input.getText().toString();
                         Log.i("User",m_Text);
+                        user_id = m_Text;
                         dialog.cancel();
                     }
                 });
@@ -224,22 +217,28 @@ public class MainActivity extends AppCompatActivity
                 Button ok = alert1.getButton(DialogInterface.BUTTON_POSITIVE);
                 ok.setTextColor(Color.BLUE);
             }
+            else{
+                user_id = userid;
+            }
 
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    
+
 
     public void TextSend(View view){
 
         String text = text_input.getText().toString();
-        if(text.length()>0){
+        if(text.length()>0 && user_id.length()>0){
             sendMessageMQTT(text);
         }
-        else{
-            Toast.makeText(this, "Please enter some data into the field before sending", Toast.LENGTH_SHORT).show();
+        else if(user_id.length() == 0){
+            Toast.makeText(this, "Please make sure you have a valid user id before proceeding", Toast.LENGTH_SHORT).show();
+        }
+        else if(text.length()>0){
+            Toast.makeText(this, "Please enter some text before hitting send button", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -394,22 +393,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void sendMessageMQTT(String text){
-        String topic = "GladOs/messages";
-        String payload = text;
-        byte[] encodedPayload = new byte[0];
-        try {
-            encodedPayload = payload.getBytes("UTF-8");
-            MqttMessage message = new MqttMessage(encodedPayload);
-            client.publish(topic, message);
-        } catch (UnsupportedEncodingException | MqttException e) {
-            e.printStackTrace();
-        }
+        if(user_id.length()>0) {
 
-        //making database entry for the new command
-        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        Date dateobj = new Date();
-        String currDate = df.format(dateobj);
-        databaseHandler.insertData(payload,currDate);
+            String topic = "GladOs/messages/"+user_id;
+            String payload = text;
+            byte[] encodedPayload = new byte[0];
+            try {
+                encodedPayload = payload.getBytes("UTF-8");
+                MqttMessage message = new MqttMessage(encodedPayload);
+                client.publish(topic, message);
+            } catch (UnsupportedEncodingException | MqttException e) {
+                e.printStackTrace();
+            }
+
+            //making database entry for the new command
+            DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+            Date dateobj = new Date();
+            String currDate = df.format(dateobj);
+            databaseHandler.insertData(payload, currDate);
+        }
+        else{
+            Toast.makeText(this, "Please make a valid username first!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
