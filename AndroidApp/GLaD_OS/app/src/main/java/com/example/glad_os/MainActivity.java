@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
         } catch (MqttException e) {
             e.printStackTrace();
         }
-            String userid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userid", "defaultStringIfNothingFound");
+            final String userid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userid", "defaultStringIfNothingFound");
 
             Log.i("Userid",userid);
             if (userid.equals("defaultStringIfNothingFound")){
@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity
                                                         db.collection("no_of_user").document("Number").set(no);
                                                         db.collection("userids").document(String.valueOf(no_users)).set(name);
                                                         PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("userid", m_Text).apply();
+                                                        sendMessageMQTT(m_Text,"GladOs/userid");
                                                     }
                                                 }
                                             });
@@ -267,7 +268,7 @@ public class MainActivity extends AppCompatActivity
 
         String text = text_input.getText().toString();
         if(text.length()>0 && user_id.length()>0){
-            sendMessageMQTT(text);
+            sendMessageMQTT(text,"GladOs/messages/"+user_id);
         }
         else if(user_id.length() == 0){
             Toast.makeText(this, "Please make sure you have a valid user id before proceeding", Toast.LENGTH_SHORT).show();
@@ -421,22 +422,22 @@ public class MainActivity extends AppCompatActivity
         String text = matches.get(0);
         returnedText.setText(text);
 
-        sendMessageMQTT(text);
+        sendMessageMQTT(text,"GladOs/messages/"+user_id);
 
         recordButtonStatus = false;
         fab.setBackground(getDrawable(R.drawable.microphone_button_off));
     }
 
-    public void sendMessageMQTT(String text){
+    public void sendMessageMQTT(String text,String channel){
         if(user_id.length()>0) {
 
-            String topic = "GladOs/messages/"+user_id;
+
             String payload = text;
             byte[] encodedPayload = new byte[0];
             try {
                 encodedPayload = payload.getBytes("UTF-8");
                 MqttMessage message = new MqttMessage(encodedPayload);
-                client.publish(topic, message);
+                client.publish(channel, message);
             } catch (UnsupportedEncodingException | MqttException e) {
                 e.printStackTrace();
             }
@@ -494,11 +495,4 @@ public class MainActivity extends AppCompatActivity
         }
         return message;
     }
-    public String intToIp(int i) {
-        return (i & 0xFF) + "." +
-                ((i >> 8 ) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                ((i >> 24) & 0xFF);
-    }
-
 }
