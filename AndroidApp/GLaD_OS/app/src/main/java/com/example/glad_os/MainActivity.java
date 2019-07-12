@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -55,6 +56,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -75,7 +78,8 @@ public class MainActivity extends AppCompatActivity
     TextView text_input;
     String user_id;
     FirebaseFirestore db;
-    int error = 0;
+    int error;
+    public static  int no_users;
 
     public String loadJSONFromAsset() {
         String json = null;
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity
         fab = findViewById(R.id.fab);
         db = FirebaseFirestore.getInstance();
 
-
+        error = 0;
         text_input = findViewById(R.id.inputText);
         databaseHandler = new DatabaseHandler(this);
 
@@ -181,11 +185,12 @@ public class MainActivity extends AppCompatActivity
         } catch (MqttException e) {
             e.printStackTrace();
         }
-        try {
-            JSONObject obj = new JSONObject(loadJSONFromAsset());
-            String userid = obj.getString("username");
+//        try {
+            String userid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userid", "defaultStringIfNothingFound");
+//            JSONObject obj = new JSONObject(loadJSONFromAsset());
+//            String userid = obj.getString("username");
             Log.i("Userid",userid);
-            if (userid.equals("null")){
+            if (userid.equals("defaultStringIfNothingFound")){
                 //showpopup();
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Pick an unique username");
@@ -198,6 +203,7 @@ public class MainActivity extends AppCompatActivity
                 builder.setView(input);
 
                 // Set up the buttons
+
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -223,20 +229,34 @@ public class MainActivity extends AppCompatActivity
                                                 break;
                                             }
                                         }
+                                        if (error == 0) {
+
+                                            db.collection("no_of_user").document("Number")
+                                                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@androidx.annotation.NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                                        no_users = Integer.parseInt(documentSnapshot.get("total_users").toString());
+                                                        Log.i("Number of users: ",String.valueOf(no_users));
+                                                        no_users = no_users+1;
+                                                        Log.i("Users:",String.valueOf(no_users));
+                                                        Map<String,Integer> no = new HashMap<>();
+                                                        no.put("total_users",no_users);
+                                                        Map<String,String> name = new HashMap<>();
+                                                        name.put("name",m_Text);
+                                                        db.collection("no_of_user").document("Number").set(no);
+                                                        db.collection("userids").document(String.valueOf(no_users)).set(name);
+                                                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("userid", m_Text).apply();
+                                                    }
+                                                }
+                                            });
+
+                                            //dialog.cancel();
+                                        }
                                     }
                                 });
-                        if (error == 0) {
-                            db.collection("no_of_user").document("Number").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@androidx.annotation.NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot documentSnapshot = task.getResult();
-                                        Log.i("Number of users: ",documentSnapshot.getData().toString());
-                                    }
-                                }
-                            });
-                            dialog.cancel();
-                        }
+
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -258,11 +278,11 @@ public class MainActivity extends AppCompatActivity
             else{
                 user_id = userid;
             }
-
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
+//
+//        }
+//        catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
