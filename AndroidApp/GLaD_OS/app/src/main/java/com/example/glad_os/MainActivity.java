@@ -1,17 +1,25 @@
 package com.example.glad_os;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +30,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +43,12 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,6 +70,28 @@ public class MainActivity extends AppCompatActivity
     MqttAndroidClient client;
     DatabaseHandler databaseHandler;
     TextView text_input;
+    Button setButton;
+    PopupWindow popupWindow;
+    ConstraintLayout constraintLayout;
+    TextView username_suggestion;
+    LinearLayout linearLayout;
+    DrawerLayout drawerLayout;
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = this.getAssets().open("userid.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +100,12 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
+        constraintLayout = findViewById(R.id.constraintlayout);
+        linearLayout = findViewById(R.id.linearLayout);
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+
+
         text_input = findViewById(R.id.inputText);
         databaseHandler = new DatabaseHandler(this);
 
@@ -138,7 +183,54 @@ public class MainActivity extends AppCompatActivity
         } catch (MqttException e) {
             e.printStackTrace();
         }
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            String userid = obj.getString("username");
+            Log.i("Userid",userid);
+            if (userid.equals("null")){
+                //showpopup();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Pick an unique username");
+
+                    // Set up the input
+                final EditText input = new EditText(this);
+                input.setTextColor(Color.BLACK);
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String m_Text = input.getText().toString();
+                        Log.i("User",m_Text);
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert1 = builder.create();
+                alert1.show();
+
+                Button cancel = alert1.getButton(DialogInterface.BUTTON_NEGATIVE);
+                cancel.setTextColor(Color.BLUE);
+
+                Button ok = alert1.getButton(DialogInterface.BUTTON_POSITIVE);
+                ok.setTextColor(Color.BLUE);
+            }
+
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+    
 
     public void TextSend(View view){
 
