@@ -81,21 +81,6 @@ public class MainActivity extends AppCompatActivity
     int error;
     public static  int no_users;
 
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = this.getAssets().open("userid.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,10 +170,8 @@ public class MainActivity extends AppCompatActivity
         } catch (MqttException e) {
             e.printStackTrace();
         }
-//        try {
             String userid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userid", "defaultStringIfNothingFound");
-//            JSONObject obj = new JSONObject(loadJSONFromAsset());
-//            String userid = obj.getString("username");
+
             Log.i("Userid",userid);
             if (userid.equals("defaultStringIfNothingFound")){
                 //showpopup();
@@ -252,7 +235,6 @@ public class MainActivity extends AppCompatActivity
                                                 }
                                             });
 
-                                            //dialog.cancel();
                                         }
                                     }
                                 });
@@ -278,11 +260,6 @@ public class MainActivity extends AppCompatActivity
             else{
                 user_id = userid;
             }
-//
-//        }
-//        catch (JSONException e) {
-//            e.printStackTrace();
-//        }
     }
 
 
