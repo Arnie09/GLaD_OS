@@ -16,6 +16,7 @@ class Youtube():
         self.song = ""
         self.CHROMESTAT=0
         self.VIDEOSTAT=-1
+        #self.browser = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver') #For raspberry pi only!
         self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
         #self.playsong()
        
