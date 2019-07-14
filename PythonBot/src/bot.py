@@ -7,30 +7,99 @@ import os
 import sys
 import json
 from dialogflow_class import DialogFlow
+from youtube import Youtube
 
 counter = 0
 message_main  = ""
 user_id = ""
 mqtt_thred_to_get_userid = None
+youtube_instance = Youtube()
+SongPlaying = False
 
 def mqttclient():
+
+    def iotControl_subroutine(message):
+        
+        iotControl_obj =iotControl(message)
+        del iotControl_obj
+
+    def play_anthem():
+
+        print("playing a song...")
+        play_still_alive = threading.Thread(target = function_that_play_still_alive)
+        play_still_alive.start()
+
+    def function_that_play_still_alive():
+
+        pygame.mixer.init()
+        song = pygame.mixer.Sound(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.wav"))
+        print(type(song))
+        pygame.mixer.Channel(2).play(song)
+        # while pygame.mixer.Channel(2).get_busy() == True:
+        #     continue
+        # pygame.mixer.Channel(2).quit()
+
+    def send_instructions_to_youtube(message):
+        
+        global SongPlaying
+        global youtube_instance
+        is_song_still_playing  = youtube_instance.instructions(message)
+        if(is_song_still_playing == False):
+            SongPlaying = False
+
+    def play_songs_from_youtube(message):
+        
+        global youtube_instance
+        global SongPlaying
+        youtube_instance.playsong(message[4:])
+        SongPlaying = True
 
     def on_connect(client,userdata,flags,rc):
         
         global user_id
-        
         print("subscribing to: GladOs/messages/"+user_id)
         client.subscribe("GladOs/messages/"+user_id)
 
+    def instantiate_dialogflow(message):
+        df_obj = DialogFlow(message)
+        if(df_obj.response):
+            TTS(df_obj.response)
+
     def on_message(client,userdata,mssg):
-        global message_main
+        global youtube_instance
+        global SongPlaying
+
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
             
             message = message.upper()
+            print(message)
+            '''here we list all the choices'''
 
-            #print(message)
-            message_main = message
+            if("TURN" in message or "LIGHT" in message or "FAN" in message):
+                iotControl_subroutine(message)
+                    
+            elif("PLAY" in message and "SONG" in message):
+                play_anthem()
+
+            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message) and SongPlaying == True):
+                print("Sending message to instruction!")
+                send_instructions_to_youtube(message)
+
+            elif("PLAY" in message and "SONG" not in message):
+                play_songs_from_youtube(message)
+            
+                '''add other functions for which basic tasks are done using custom scripts like email'''
+                '''Some example commands are - CHECK MY EMAIL - for which some gmail api needs to be integrated'''
+                ''' CALCULATE - make a universal calculation bot in python'''
+                ''' ADD to playlist -  ability to add songs to playlists'''
+                '''play a specific playlist'''
+                '''take reminders'''
+                '''integrating dialog flow here'''
+            else:
+                instantiate_dialogflow(message) 
+
+            
 
     client = mqtt.Client()
 
@@ -101,50 +170,6 @@ while(True):
 '''calling the main message thread from here'''         
 mqtt_thred = threading.Thread(target = mqttclient)
 mqtt_thred.start()
-
-def play_anthem():
-
-    print("playing a song...")
-    play_still_alive = threading.Thread(target = function_that_play_still_alive)
-    play_still_alive.start()
-
-def function_that_play_still_alive():
-
-    pygame.mixer.init()
-    pygame.mixer.music.load(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.mp3"))
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy() == True:
-        continue
-    pygame.mixer.quit()
-
-while(True):
-
-    if(message_main!= ""):
-        print(message_main)
-        
-
-        if("TURN" in message_main or "LIGHT" in message_main or "FAN" in message_main):
-                    print("HI")
-                    iotControl_obj =iotControl(message_main,counter)
-                    counter+=1
-                    del iotControl_obj
-
-        elif("PLAY" in message_main and "SONG" in message_main):
-            play_anthem()
-        elif("PLAY" in message_main and "SONG" not in message_main):
-            #playfromYoutube()
-            '''add other functions for which basic tasks are done using custom scripts like email'''
-            '''Some example commands are - CHECK MY EMAIL - for which some gmail api needs to be integrated'''
-            ''' CALCULATE - make a universal calculation bot in python'''
-            ''' ADD to playlist -  ability to add songs to playlists'''
-            '''play a specific playlist'''
-            '''take reminders'''
-            '''integrating dialog flow here'''
-        else:
-            df_obj = DialogFlow(message_main)
-            if(df_obj.response):
-                TTS(df_obj.response,counter)
-                counter+=1  
-        message_main = ""         
+   
 
 

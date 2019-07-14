@@ -5,9 +5,8 @@ import pygame
 
 class TTS():
 
-    def __init__(self, message,counter):
+    def __init__(self, message):
 
-        self.counter = counter
         self.message = message
         self.play()
   
@@ -22,7 +21,7 @@ class TTS():
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy() == True:
             continue
-        pygame.mixer.quit()
+        #pygame.mixer.quit()
         os.remove("message.mp3")
 
 

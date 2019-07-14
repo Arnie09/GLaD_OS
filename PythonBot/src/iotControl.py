@@ -4,10 +4,9 @@ import sys
 
 class iotControl():
 
-    def __init__(self,message,counter):
+    def __init__(self,message):
         print("Here")
         self.message = message
-        self.counter = counter
         self.determine()
 
     def determine(self):
@@ -21,14 +20,14 @@ class iotControl():
 
         if("ON" in self.message):
             '''turn lights on'''
-            obj = TTS("Turning lights on!",self.counter)
+            obj = TTS("Turning lights on!")
             del obj
             print("Here")
             
 
         elif "OFF" in self.message:
             '''turn lights off'''
-            obj = TTS("Turning lights off!",self.counter)
+            obj = TTS("Turning lights off!")
             del obj
             
         
@@ -38,9 +37,9 @@ class iotControl():
 
         if("ON" in self.message):
             '''turn lights on'''
-            TTS("Turning fans on!",self.counter)
+            TTS("Turning fans on!")
 
 
         elif "OFF" in self.message:
             '''turn lights off'''
-            TTS("Turning fans off!",self.counter)
+            TTS("Turning fans off!")

@@ -9,60 +9,42 @@ from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
 
-CHROMESTAT=0
-VIDEOSTAT=-1
 
-browser=webdriver.Chrome(executable_path=r"C:\Users\Sandeep\Desktop\chromedriver.exe")
-def playsong(song):
-    global VIDEOSTAT
-    print("welcome to playsong")
-    browser.get("https://www.google.com")
-    search = browser.find_element_by_name('q')
-    search.send_keys(song+" Youtube")
-    search.send_keys(Keys.RETURN)
-    VIDEOSTAT=1
-    try:
-        browser.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div[1]/div[2]/div/div/div[2]/h3/a/h3").click()
-    except:
-        browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
+class Youtube():
 
+    def __init__(self):
+        self.song = ""
+        self.CHROMESTAT=0
+        self.VIDEOSTAT=-1
+        self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
+        #self.playsong()
+       
 
-def execute(msg):
-    global VIDEOSTAT
-    if(msg.startswith("HEY GLADOS")):
-        msg=msg[11:]
-        print(msg)
-    if(msg.startswith("PLAY") and len(msg)>4):
-        song=msg[5:]
-        print(song+ "playing")
-        playsong(song)
-    elif (msg=="PLAY" or msg=="RESUME" ) and VIDEOSTAT==0:
+    def playsong(self,message):
+        #obj = TTS("Playing "+self.song)
+        self.song = message
+        self.browser.get("https://www.google.com")
+        search = self.browser.find_element_by_name('q')
+        search.send_keys(self.song+" Youtube")
+        search.send_keys(Keys.RETURN)
+        self.VIDEOSTAT=1
+        try:
+            self.browser.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div[1]/div[2]/div/div/div[2]/h3/a/h3").click()
+        except:
+            self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
+
+    def instructions(self,msg):
+        
+        print(msg,self.VIDEOSTAT)
         print("check0")
-        browser.find_element_by_class_name("ytp-play-button").click()
-        VIDEOSTAT=1
-    elif (msg=="PAUSE" or msg=="STOP") and VIDEOSTAT==1:
-        print("check1")
-        browser.find_element_by_class_name("ytp-play-button").click()
-        VIDEOSTAT=0
-    elif(msg in ["QUIT","EXIT"]):
-        browser.get("https://www.google.com")
-
-def on_connect(client,userdata,flags,rc):
-    print("connected")
-    client.subscribe("GladOs/messages")
-
-def on_message(client,userdata,mssg):
-    if mssg.topic == "GladOs/messages":
-        message = str(mssg.payload)[2:-1]
-        message=message.upper()
-        print("Received "+message)
-        execute(message)
-
-client = mqtt.Client()
-
-client.on_connect = on_connect
-client.on_message = on_message
-
-client.connect("broker.hivemq.com",1883,60)
-
-client.loop_forever()
+        if ("PLAY" in msg or "RESUME" in msg) and self.VIDEOSTAT==0:
+            
+            self.browser.find_element_by_class_name("ytp-play-button").click()
+            self.VIDEOSTAT=1
+        elif ("PAUSE" in msg or "STOP" in msg) and self.VIDEOSTAT==1:
+            print("check1")
+            self.browser.find_element_by_class_name("ytp-play-button").click()
+            self.VIDEOSTAT=0
+        elif("QUIT" in msg or "EXIT" in msg):
+            self.browser.get("https://www.google.com")
+            return False
