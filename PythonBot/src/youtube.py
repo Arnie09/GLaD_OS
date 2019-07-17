@@ -6,7 +6,7 @@ from playsound import playsound
 import os
 import sys
 from selenium import webdriver
-import time
+from time import sleep
 from selenium.webdriver.common.keys import Keys
 
 
@@ -34,12 +34,15 @@ class Youtube():
             self.browser.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div[1]/div[2]/div/div/div[2]/h3/a/h3").click()
         except:
             self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
+            
         sleep(1.5)
-        length_str = self.driver.find_element_by_class_name("ytp-time-duration").text
+
+        length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
         print("Length: ",length_str)
         min,sec = map(int,length_str.split(":"))
         time = min*60+sec
         self.length = time
+        print(self.length)
 
     def instructions(self,msg):
         

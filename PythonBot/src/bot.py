@@ -17,25 +17,38 @@ mqtt_thred_to_get_userid = None
 youtube_instance = Youtube()
 SongPlaying = False
 SongName = ""
+PlaylistPlaying = False
 
 def mqttclient():
 
-    def add_to_playlist():
-        print(SongName,youtube_instance.length)
-        conn = sqlite3.connect(os.path.join(sys.path[0],"assets/playlist_database.db"))
-        c = conn.cursor()
-        sql = """CREATE TABLE IF NOT EXISTS my_playlist(
-        songname = number,
-        length = number
-        )"""
-        c.execute(sql)
-        print("Here2")
-        conn.commit()
+    def play_my_playlist():
         
-        sql = "INSERT OR REPLACE INTO my_playlist(songname,length) VALUES(?,?,?)",(SongName,youtube_instance.length)
-        c.execute(sql)
-        conn.commit()
-        conn.close()
+        global SongPlaying
+        global PlaylistPlaying
+        print("Here")
+        if(SongPlaying == True):
+            #TTS_engine("Please stop mysic first before trying to play playlist")
+            print("Please stop mysic first before trying to play playlist")
+        else:
+            #TTS_engine("Playing your playlist!")
+            PlaylistPlaying = True
+            #print("We are here")
+            
+
+    def add_to_playlist():
+
+        global SongName
+        global youtube_instance
+
+
+    
+        print(SongName,youtube_instance.length)
+        with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
+            data = json.load(my_playlist_file)
+            data[SongName] = youtube_instance.length
+            my_playlist_file.seek(0)
+            json.dump(data,my_playlist_file)
+            my_playlist_file.truncate()
 
     def iotControl_subroutine(message):
         
@@ -129,6 +142,10 @@ def mqttclient():
                 '''integrating dialog flow here'''
             elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
                 add_to_playlist()
+
+            elif ("PLAY" in message and "PLAYLIST" in message):
+                print("Calling play my playlist")
+                play_my_playlist()
 
             else:
                 instantiate_dialogflow(message) 
