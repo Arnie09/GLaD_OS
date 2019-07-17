@@ -15,7 +15,7 @@ with open(os.path.join(sys.path[0],"assets/user_id.json"),'r')as user_id_file:
 class PlayPlaylist():
 
     def __init__(self):
-        self.STATUS = True
+        self.STATUS = False
         threadingmqtt = threading.Thread(target = self.mqttclient)
         threadingmqtt.start()
         print(self.STATUS)
@@ -68,6 +68,8 @@ class PlayPlaylist():
 
         client.on_connect = on_connect
         client.on_message = on_message
+
+        self.STATUS = True
 
         client.connect("broker.hivemq.com",1883,60)
         print("dbahbdhabshdbahjdhjsabdhbahjbdhajhdjahbdhabhbsdhbashbdhasdhabshdb")

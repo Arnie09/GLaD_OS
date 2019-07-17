@@ -37,12 +37,15 @@ class Youtube():
             
         sleep(1.5)
 
-        length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
-        print("Length: ",length_str)
-        min,sec = map(int,length_str.split(":"))
-        time = min*60+sec
-        self.length = time
-        print(self.length)
+        try:
+            length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
+            print("Length: ",length_str)
+            min,sec = map(int,length_str.split(":"))
+            time = min*60+sec
+            self.length = time
+            print(self.length)
+        except:
+            self.length = 250
 
     def instructions(self,msg):
         

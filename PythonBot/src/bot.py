@@ -19,6 +19,7 @@ youtube_instance = Youtube()
 SongPlaying = False
 SongName = ""
 PlaylistPlaying = False
+PlayPlaylist_instance = None
 
 def mqttclient():
 
@@ -30,6 +31,7 @@ def mqttclient():
         
         global SongPlaying
         global PlaylistPlaying
+        global PlayPlaylist_instance
         print("Here")
         if(SongPlaying == True):
             #TTS_engine("Please stop mysic first before trying to play playlist")
@@ -37,7 +39,7 @@ def mqttclient():
         else:
             #TTS_engine("Playing your playlist!")
             PlaylistPlaying = True
-            PlayPlaylist()
+            PlayPlaylist_instance = PlayPlaylist()
             print("We are here")
 
 
@@ -45,10 +47,8 @@ def mqttclient():
 
         global SongName
         global youtube_instance
-
-
-    
-        print(SongName,youtube_instance.length)
+  
+        print("added to playlist:",SongName,youtube_instance.length)
         with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
             data = json.load(my_playlist_file)
             data[SongName] = youtube_instance.length
@@ -95,10 +95,7 @@ def mqttclient():
 
         SongName = message[4:]
         SongPlaying = True
-
         youtube_instance.playsong(message[4:])
-        
-
         print("SongPlaying = ",SongPlaying)
 
     def on_connect(client,userdata,flags,rc):
@@ -117,41 +114,46 @@ def mqttclient():
         global SongPlaying
         global SongName
         global PlaylistPlaying
-        global PlayPlaylist
+        global PlayPlaylist_instance
 
-        print(SongPlaying)
-        print(SongName)
+        print("Bot.py SongPlaying status: ",SongPlaying)
+        print("Bot.py SongName status: ",SongName)
+        print("Bot.py PlayPlaylist status: ",PlaylistPlaying)
+
+
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
             
             message = message.upper()
-            print(message)
+            print("Bot.py mqtt client:",message)
             '''here we list all the choices'''
 
             if("TURN" in message or "LIGHT" in message or "FAN" in message):
+                print("IOT Call...")
                 iotControl_subroutine(message)
                     
             elif("PLAY" in message and "SONG" in message):
+                print("Playing anthem....")
                 play_anthem()
 
             elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message) and SongPlaying == True and "PLAYLIST" not in message and PlaylistPlaying == False):
                 print("Sending message to instruction!")
                 send_instructions_to_youtube(message)
 
-            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist.STATUS == False):
+            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist_instance == None):
+                print("Playsongs from youtube....")
                 play_songs_from_youtube(message)
-            
-                '''add other functions for which basic tasks are done using custom scripts like email'''
-                '''Some example commands are - CHECK MY EMAIL - for which some gmail api needs to be integrated'''
-                ''' CALCULATE - make a universal calculation bot in python'''
-                ''' ADD to playlist -  ability to add songs to playlists'''
-                '''play a specific playlist'''
-                '''take reminders'''
-                '''integrating dialog flow here'''
+
+            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist_instance.STATUS == False):
+                print("Playsongs from youtube....")
+                play_songs_from_youtube(message)
+
             elif("EXIT" in message and PlaylistPlaying == True):
+                print("Exit from playlist state...")
                 change_playliststate()
 
             elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
+                print("Adding song to playlist....")
                 add_to_playlist()
 
             elif ("PLAY" in message and "PLAYLIST" in message):
@@ -159,6 +161,7 @@ def mqttclient():
                 play_my_playlist()
 
             elif ("PLAY" not in message and "PAUSE" not in message):
+                print("Time for dialogflow...")
                 instantiate_dialogflow(message) 
 
             
