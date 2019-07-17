@@ -9,6 +9,7 @@ import sys
 import json
 from dialogflow_class import DialogFlow
 from youtube import Youtube
+from PlayPlaylist import PlayPlaylist
 
 counter = 0
 message_main  = ""
@@ -21,6 +22,10 @@ PlaylistPlaying = False
 
 def mqttclient():
 
+    def change_playliststate():
+        global PlaylistPlaying
+        PlaylistPlaying = False
+
     def play_my_playlist():
         
         global SongPlaying
@@ -32,8 +37,9 @@ def mqttclient():
         else:
             #TTS_engine("Playing your playlist!")
             PlaylistPlaying = True
-            #print("We are here")
-            
+            PlayPlaylist()
+            print("We are here")
+
 
     def add_to_playlist():
 
@@ -110,6 +116,8 @@ def mqttclient():
         global youtube_instance
         global SongPlaying
         global SongName
+        global PlaylistPlaying
+        global PlayPlaylist
 
         print(SongPlaying)
         print(SongName)
@@ -126,11 +134,11 @@ def mqttclient():
             elif("PLAY" in message and "SONG" in message):
                 play_anthem()
 
-            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message) and SongPlaying == True and "PLAYLIST" not in message):
+            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message) and SongPlaying == True and "PLAYLIST" not in message and PlaylistPlaying == False):
                 print("Sending message to instruction!")
                 send_instructions_to_youtube(message)
 
-            elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
+            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist.STATUS == False):
                 play_songs_from_youtube(message)
             
                 '''add other functions for which basic tasks are done using custom scripts like email'''
@@ -140,6 +148,9 @@ def mqttclient():
                 '''play a specific playlist'''
                 '''take reminders'''
                 '''integrating dialog flow here'''
+            elif("EXIT" in message and PlaylistPlaying == True):
+                change_playliststate()
+
             elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
                 add_to_playlist()
 
@@ -147,7 +158,7 @@ def mqttclient():
                 print("Calling play my playlist")
                 play_my_playlist()
 
-            else:
+            elif ("PLAY" not in message and "PAUSE" not in message):
                 instantiate_dialogflow(message) 
 
             
