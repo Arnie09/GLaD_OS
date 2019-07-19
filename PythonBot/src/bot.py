@@ -10,6 +10,7 @@ import json
 from dialogflow_class import DialogFlow
 from youtube import Youtube
 from PlayPlaylist import PlayPlaylist
+import wikipedia
 
 counter = 0
 message_main  = ""
@@ -22,6 +23,29 @@ PlaylistPlaying = False
 PlayPlaylist_instance = None
 
 def mqttclient():
+
+    def wikipedia_search(message):
+        global SongPlaying
+        global PlaylistPlaying
+        global PlayPlaylist_instance
+        global youtube_instance
+
+        summary=wikipedia.summary(message[14:],sentences=1)
+
+        if(SongPlaying == True):
+            youtube_instance.instructions("PAUSE")
+            TTS(summary)
+            youtube_instance.instructions("RESUME")
+        
+        elif(PlayPlaylist_instance is not None and PlayPlaylist_instance.STATUS == True):
+            PlayPlaylist_instance.instructions("PAUSE")
+            TTS(summary)
+            PlayPlaylist_instance.instructions("PLAY")
+
+        else:
+            TTS(summary)
+
+
 
     def change_playliststate():
         global PlaylistPlaying
@@ -159,10 +183,17 @@ def mqttclient():
             elif ("PLAY" in message and "PLAYLIST" in message):
                 print("Calling play my playlist")
                 play_my_playlist()
+            
+            elif("TELL ME ABOUT" in message):
+                print("Search from wikipedia...")
+                wikipedia_search(message)
 
             elif ("PLAY" not in message and "PAUSE" not in message):
                 print("Time for dialogflow...")
                 instantiate_dialogflow(message) 
+
+            
+
 
             
 

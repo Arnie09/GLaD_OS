@@ -19,6 +19,10 @@ class PlayPlaylist():
         threadingmqtt = threading.Thread(target = self.mqttclient)
         threadingmqtt.start()
         print(self.STATUS)
+
+    def send_instruction_to_youtube(self,inst):
+        global youtubeinstance
+        youtubeinstance.instructions(inst)
         
 
     def mqttclient(self):
