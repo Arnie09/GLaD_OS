@@ -100,7 +100,6 @@ def mqttclient():
 
         print("Bot.py SongPlaying status: ",SongPlaying)
         print("Bot.py SongName status: ",SongName)
-        print("Bot.py PlayPlaylist status: ",PlaylistPlaying)
 
 
         if  "GladOs/messages" in mssg.topic :
@@ -118,7 +117,7 @@ def mqttclient():
                 print("Playing anthem....")
                 play_anthem()
 
-            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message or "NEXT" in message or "ADD TO PLAYLIST" in message) and SongPlaying == True and PlaylistPlaying == False):
+            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message or "NEXT" in message or "ADD TO PLAYLIST" in message) and SongPlaying == True):
                 print("Sending message to instruction!")
                 send_instructions_to_youtube(message)
 

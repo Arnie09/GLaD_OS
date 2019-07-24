@@ -47,6 +47,7 @@ class Youtube():
     def play_playlist(self):
         self.browser.get('https://www.youtube.com/playlist?list=PLRerImSgf8rZboaUasZfy_Mi4_WTKTyRb')
         self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer').click()
+        self.VIDEOSTAT = 1
 
     def instructions(self,msg):
         
@@ -83,6 +84,7 @@ class Youtube():
                 
         elif("REMOVE" in msg and "PLAYLIST" in msg):
             url = self.browser.current_url
+            print(url)
             with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
                 data = json.load(my_playlist_file)
                 if url in data["songs"]:
@@ -105,8 +107,9 @@ class Youtube():
 
 
 # obj = Youtube()
-# obj.playsong("Woh Lamhe")
+# obj.play_playlist()
 
 # sleep(5)
-# obj.instructions("ADD TO PLAYLIST")
+# obj.instructions("REMOVE FROM PLAYLIST")
 # sleep(5)
+# print("Hi")
