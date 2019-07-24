@@ -43,41 +43,27 @@ class Youtube():
             self.browser.find_element_by_xpath("//*[@id='rso']/div[1]/div/div/div/div[1]/div[2]/div/div/div[2]/h3/a/h3").click()
         except:
             self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
-            
-        # sleep(1.5)
-
-        # try:
-        #     length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
-        #     print("Length: ",length_str)
-        #     min,sec = map(int,length_str.split(":"))
-        #     time = min*60+sec
-        #     self.length = time
-        #     print(self.length)
-        # except:
-        #     self.length = 250
 
     def play_playlist(self):
         self.browser.get('https://www.youtube.com/playlist?list=PLRerImSgf8rZboaUasZfy_Mi4_WTKTyRb')
-        # self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
-        # sleep(1)
-        # self.browser.find_element_by_xpath('//*[@id="endpoint"]/paper-item').click()
         self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer').click()
 
     def instructions(self,msg):
         
         print(msg,self.VIDEOSTAT)
-        print("check0")
+
         if ("PLAY" in msg or "RESUME" in msg) and self.VIDEOSTAT==0:
-            
             self.browser.find_element_by_class_name("ytp-play-button").click()
             self.VIDEOSTAT=1
+
         elif ("PAUSE" in msg or "STOP" in msg) and self.VIDEOSTAT==1:
-            print("check1")
             self.browser.find_element_by_class_name("ytp-play-button").click()
             self.VIDEOSTAT=0
+
         elif("QUIT" in msg or "EXIT" in msg):
             self.browser.get("https://www.google.com")
             return False
+
         elif("ADD TO PLAYLIST" in msg):
             url = self.browser.current_url
             with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
@@ -96,20 +82,31 @@ class Youtube():
                     my_playlist_file.truncate()
                 
         elif("REMOVE" in msg and "PLAYLIST" in msg):
-            self.browser.find_element_by_xpath('//*[@id="top-level-buttons"]/ytd-button-renderer[2]/a').click()
-            checkbox = self.browser.find_element_by_id('checkbox')
-            if checkbox.is_selected() == True:
-                self.browser.find_element_by_xpath('(//*[@id="checkboxContainer"])[2]').click()
-            self.browser.find_element_by_xpath('//*[@id="button"]').click()
+            url = self.browser.current_url
+            with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
+                data = json.load(my_playlist_file)
+                if url in data["songs"]:
+
+                    self.browser.find_element_by_xpath('//*[@id="top-level-buttons"]/ytd-button-renderer[2]/a').click()
+                    sleep(2)
+                    self.browser.find_element_by_xpath('(//*[@id="checkboxContainer"])[2]').click()
+                    self.browser.find_element_by_xpath('//*[@id="close-button"]').click()
+
+                    listofsongs = data["songs"]
+                    listofsongs.remove(url)
+                    my_playlist_file.seek(0)
+                    json.dump(data,my_playlist_file)
+                    my_playlist_file.truncate()
+            
         elif("NEXT" in msg):
             next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
 
         return True
 
 
-obj = Youtube()
-obj.playsong("Woh Lamhe")
+# obj = Youtube()
+# obj.playsong("Woh Lamhe")
 
-sleep(5)
-obj.instructions("ADD TO PLAYLIST")
-sleep(5)
+# sleep(5)
+# obj.instructions("ADD TO PLAYLIST")
+# sleep(5)

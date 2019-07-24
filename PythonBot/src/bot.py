@@ -9,7 +9,6 @@ import sys
 import json
 from dialogflow_class import DialogFlow
 from youtube import Youtube
-# from PlayPlaylist import PlayPlaylist
 import wikipedia
 
 counter = 0
@@ -19,15 +18,11 @@ mqtt_thred_to_get_userid = None
 youtube_instance = Youtube()
 SongPlaying = False
 SongName = ""
-PlaylistPlaying = False
-PlayPlaylist_instance = None
 
 def mqttclient():
 
     def wikipedia_search(message):
         global SongPlaying
-        # global PlaylistPlaying
-        # global PlayPlaylist_instance
         global youtube_instance
 
         summary=wikipedia.summary(message[14:],sentences=1)
@@ -36,55 +31,17 @@ def mqttclient():
             youtube_instance.instructions("PAUSE")
             TTS(summary)
             youtube_instance.instructions("RESUME")
-        
-        # elif(PlayPlaylist_instance is not None and PlayPlaylist_instance.STATUS == True):
-        #     PlayPlaylist_instance.instructions("PAUSE")
-        #     TTS(summary)
-        #     PlayPlaylist_instance.instructions("PLAY")
 
         else:
             TTS(summary)
 
-
-
-    # def change_playliststate():
-    #     global PlaylistPlaying
-    #     PlaylistPlaying = False
-
     def play_my_playlist():
-        
-        # global SongPlaying
-        # global PlaylistPlaying
-        # global PlayPlaylist_instance
-        # print("Here")
-        # if(SongPlaying == True):
-        #     #TTS_engine("Please stop mysic first before trying to play playlist")
-        #     print("Please stop mysic first before trying to play playlist")
-        # else:
-        #     #TTS_engine("Playing your playlist!")
-        #     PlaylistPlaying = True
-        #     PlayPlaylist_instance = PlayPlaylist()
-        #     print("We are here")
 
         global youtube_instance
         global SongPlaying
         print("In play my playlist...")
         SongPlaying = True
         youtube_instance.play_playlist()
-
-
-    # def add_to_playlist():
-
-    #     global SongName
-    #     global youtube_instance
-  
-    #     print("added to playlist:",SongName,youtube_instance.length)
-    #     with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
-    #         data = json.load(my_playlist_file)
-    #         data[SongName] = youtube_instance.length
-    #         my_playlist_file.seek(0)
-    #         json.dump(data,my_playlist_file)
-    #         my_playlist_file.truncate()
 
     def iotControl_subroutine(message):
         
@@ -103,9 +60,6 @@ def mqttclient():
         song = pygame.mixer.Sound(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.wav"))
         print(type(song))
         pygame.mixer.Channel(2).play(song)
-        # while pygame.mixer.Channel(2).get_busy() == True:
-        #     continue
-        # pygame.mixer.Channel(2).quit()
 
     def send_instructions_to_youtube(message):
         
@@ -143,8 +97,6 @@ def mqttclient():
         global youtube_instance
         global SongPlaying
         global SongName
-        # global PlaylistPlaying
-        # global PlayPlaylist_instance
 
         print("Bot.py SongPlaying status: ",SongPlaying)
         print("Bot.py SongName status: ",SongName)
@@ -173,18 +125,6 @@ def mqttclient():
             elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
                 print("Playsongs from youtube....")
                 play_songs_from_youtube(message)
-
-            # elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
-            #     print("Playsongs from youtube....")
-            #     play_songs_from_youtube(message)
-
-            # elif("EXIT" in message and PlaylistPlaying == True):
-            #     print("Exit from playlist state...")
-            #     change_playliststate()
-
-            # elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
-            #     print("Adding song to playlist....")
-            #     add_to_playlist()
 
             elif ("PLAY" in message and "PLAYLIST" in message):
                 print("Calling play my playlist")
@@ -267,6 +207,3 @@ while(True):
 '''calling the main message thread from here'''         
 mqtt_thred = threading.Thread(target = mqttclient)
 mqtt_thred.start()
-   
-
-
