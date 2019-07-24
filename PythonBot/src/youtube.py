@@ -4,6 +4,7 @@ from TTS_engine import TTS
 import threading
 from playsound import playsound
 import os
+import json
 import sys
 from selenium import webdriver
 from time import sleep
@@ -78,21 +79,37 @@ class Youtube():
             self.browser.get("https://www.google.com")
             return False
         elif("ADD TO PLAYLIST" in msg):
-            checkbox = self.browser.find_element_by_id('checkbox')
-            if checkbox.is_selected() == False:
-                checkbox.click()
+            url = self.browser.current_url
+            with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
+                data = json.load(my_playlist_file)
+                if(url not in data["songs"]):
+
+                    self.browser.find_element_by_xpath('//*[@id="top-level-buttons"]/ytd-button-renderer[2]/a').click()
+                    sleep(2)
+                    self.browser.find_element_by_xpath('(//*[@id="checkboxContainer"])[2]').click()
+                    self.browser.find_element_by_xpath('//*[@id="close-button"]').click()
+
+                    listofsongs = data["songs"]
+                    listofsongs.append(url)
+                    my_playlist_file.seek(0)
+                    json.dump(data,my_playlist_file)
+                    my_playlist_file.truncate()
+                
         elif("REMOVE" in msg and "PLAYLIST" in msg):
+            self.browser.find_element_by_xpath('//*[@id="top-level-buttons"]/ytd-button-renderer[2]/a').click()
             checkbox = self.browser.find_element_by_id('checkbox')
             if checkbox.is_selected() == True:
-                checkbox.click()
+                self.browser.find_element_by_xpath('(//*[@id="checkboxContainer"])[2]').click()
+            self.browser.find_element_by_xpath('//*[@id="button"]').click()
         elif("NEXT" in msg):
             next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
 
         return True
 
 
-# obj = Youtube()
-# obj.play_playlist()
-# sleep(5)
-# obj.instructions("NEXT SONG")
-# sleep(5)
+obj = Youtube()
+obj.playsong("Woh Lamhe")
+
+sleep(5)
+obj.instructions("ADD TO PLAYLIST")
+sleep(5)
