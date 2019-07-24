@@ -9,7 +9,7 @@ import sys
 import json
 from dialogflow_class import DialogFlow
 from youtube import Youtube
-from PlayPlaylist import PlayPlaylist
+# from PlayPlaylist import PlayPlaylist
 import wikipedia
 
 counter = 0
@@ -26,8 +26,8 @@ def mqttclient():
 
     def wikipedia_search(message):
         global SongPlaying
-        global PlaylistPlaying
-        global PlayPlaylist_instance
+        # global PlaylistPlaying
+        # global PlayPlaylist_instance
         global youtube_instance
 
         summary=wikipedia.summary(message[14:],sentences=1)
@@ -37,48 +37,54 @@ def mqttclient():
             TTS(summary)
             youtube_instance.instructions("RESUME")
         
-        elif(PlayPlaylist_instance is not None and PlayPlaylist_instance.STATUS == True):
-            PlayPlaylist_instance.instructions("PAUSE")
-            TTS(summary)
-            PlayPlaylist_instance.instructions("PLAY")
+        # elif(PlayPlaylist_instance is not None and PlayPlaylist_instance.STATUS == True):
+        #     PlayPlaylist_instance.instructions("PAUSE")
+        #     TTS(summary)
+        #     PlayPlaylist_instance.instructions("PLAY")
 
         else:
             TTS(summary)
 
 
 
-    def change_playliststate():
-        global PlaylistPlaying
-        PlaylistPlaying = False
+    # def change_playliststate():
+    #     global PlaylistPlaying
+    #     PlaylistPlaying = False
 
     def play_my_playlist():
         
-        global SongPlaying
-        global PlaylistPlaying
-        global PlayPlaylist_instance
-        print("Here")
-        if(SongPlaying == True):
-            #TTS_engine("Please stop mysic first before trying to play playlist")
-            print("Please stop mysic first before trying to play playlist")
-        else:
-            #TTS_engine("Playing your playlist!")
-            PlaylistPlaying = True
-            PlayPlaylist_instance = PlayPlaylist()
-            print("We are here")
+        # global SongPlaying
+        # global PlaylistPlaying
+        # global PlayPlaylist_instance
+        # print("Here")
+        # if(SongPlaying == True):
+        #     #TTS_engine("Please stop mysic first before trying to play playlist")
+        #     print("Please stop mysic first before trying to play playlist")
+        # else:
+        #     #TTS_engine("Playing your playlist!")
+        #     PlaylistPlaying = True
+        #     PlayPlaylist_instance = PlayPlaylist()
+        #     print("We are here")
 
-
-    def add_to_playlist():
-
-        global SongName
         global youtube_instance
+        global SongPlaying
+        print("In play my playlist...")
+        SongPlaying = True
+        youtube_instance.play_playlist()
+
+
+    # def add_to_playlist():
+
+    #     global SongName
+    #     global youtube_instance
   
-        print("added to playlist:",SongName,youtube_instance.length)
-        with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
-            data = json.load(my_playlist_file)
-            data[SongName] = youtube_instance.length
-            my_playlist_file.seek(0)
-            json.dump(data,my_playlist_file)
-            my_playlist_file.truncate()
+    #     print("added to playlist:",SongName,youtube_instance.length)
+    #     with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
+    #         data = json.load(my_playlist_file)
+    #         data[SongName] = youtube_instance.length
+    #         my_playlist_file.seek(0)
+    #         json.dump(data,my_playlist_file)
+    #         my_playlist_file.truncate()
 
     def iotControl_subroutine(message):
         
@@ -137,8 +143,8 @@ def mqttclient():
         global youtube_instance
         global SongPlaying
         global SongName
-        global PlaylistPlaying
-        global PlayPlaylist_instance
+        # global PlaylistPlaying
+        # global PlayPlaylist_instance
 
         print("Bot.py SongPlaying status: ",SongPlaying)
         print("Bot.py SongName status: ",SongName)
@@ -160,25 +166,25 @@ def mqttclient():
                 print("Playing anthem....")
                 play_anthem()
 
-            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message) and SongPlaying == True and "PLAYLIST" not in message and PlaylistPlaying == False):
+            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message or "NEXT" in message or "ADD TO PLAYLIST" in message) and SongPlaying == True and PlaylistPlaying == False):
                 print("Sending message to instruction!")
                 send_instructions_to_youtube(message)
 
-            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist_instance == None):
+            elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
                 print("Playsongs from youtube....")
                 play_songs_from_youtube(message)
 
-            elif("PLAY" in message and "SONG" not in message and "LIST" not in message and PlayPlaylist_instance.STATUS == False):
-                print("Playsongs from youtube....")
-                play_songs_from_youtube(message)
+            # elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
+            #     print("Playsongs from youtube....")
+            #     play_songs_from_youtube(message)
 
-            elif("EXIT" in message and PlaylistPlaying == True):
-                print("Exit from playlist state...")
-                change_playliststate()
+            # elif("EXIT" in message and PlaylistPlaying == True):
+            #     print("Exit from playlist state...")
+            #     change_playliststate()
 
-            elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
-                print("Adding song to playlist....")
-                add_to_playlist()
+            # elif("ADD" in message and "PLAYLIST" in message and SongPlaying == True and SongName is not ""):
+            #     print("Adding song to playlist....")
+            #     add_to_playlist()
 
             elif ("PLAY" in message and "PLAYLIST" in message):
                 print("Calling play my playlist")
@@ -191,11 +197,6 @@ def mqttclient():
             elif ("PLAY" not in message and "PAUSE" not in message):
                 print("Time for dialogflow...")
                 instantiate_dialogflow(message) 
-
-            
-
-
-            
 
     client = mqtt.Client()
 

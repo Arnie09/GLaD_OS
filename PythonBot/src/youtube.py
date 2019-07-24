@@ -19,13 +19,21 @@ class Youtube():
         self.length = 0
         #self.browser = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver') #For raspberry pi only!
         self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
+        self.browser.get("https://www.google.com")
+        self.browser.find_element_by_css_selector('#gb_70').click()
+        self.browser.find_element_by_name('identifier').send_keys('gladooosss@gmail.com')
+        self.browser.find_element_by_xpath('//*[@id="identifierNext"]/span').click()
+        sleep(1)
+        self.browser.find_element_by_name('password').send_keys('Iamgladyoucame')
+        self.browser.find_element_by_xpath('//*[@id="passwordNext"]/span/span').click()
+        sleep(2)
+
         #self.playsong()
        
 
     def playsong(self,message):
         #obj = TTS("Playing "+self.song)
         self.song = message
-        self.browser.get("https://www.google.com")
         search = self.browser.find_element_by_name('q')
         search.send_keys(self.song+" Youtube")
         search.send_keys(Keys.RETURN)
@@ -35,17 +43,24 @@ class Youtube():
         except:
             self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
             
-        sleep(1.5)
+        # sleep(1.5)
 
-        try:
-            length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
-            print("Length: ",length_str)
-            min,sec = map(int,length_str.split(":"))
-            time = min*60+sec
-            self.length = time
-            print(self.length)
-        except:
-            self.length = 250
+        # try:
+        #     length_str = self.browser.find_element_by_class_name("ytp-time-duration").text
+        #     print("Length: ",length_str)
+        #     min,sec = map(int,length_str.split(":"))
+        #     time = min*60+sec
+        #     self.length = time
+        #     print(self.length)
+        # except:
+        #     self.length = 250
+
+    def play_playlist(self):
+        self.browser.get('https://www.youtube.com/playlist?list=PLRerImSgf8rZboaUasZfy_Mi4_WTKTyRb')
+        # self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
+        # sleep(1)
+        # self.browser.find_element_by_xpath('//*[@id="endpoint"]/paper-item').click()
+        self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer').click()
 
     def instructions(self,msg):
         
@@ -62,4 +77,22 @@ class Youtube():
         elif("QUIT" in msg or "EXIT" in msg):
             self.browser.get("https://www.google.com")
             return False
+        elif("ADD TO PLAYLIST" in msg):
+            checkbox = self.browser.find_element_by_id('checkbox')
+            if checkbox.is_selected() == False:
+                checkbox.click()
+        elif("REMOVE" in msg and "PLAYLIST" in msg):
+            checkbox = self.browser.find_element_by_id('checkbox')
+            if checkbox.is_selected() == True:
+                checkbox.click()
+        elif("NEXT" in msg):
+            next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
+
         return True
+
+
+# obj = Youtube()
+# obj.play_playlist()
+# sleep(5)
+# obj.instructions("NEXT SONG")
+# sleep(5)
