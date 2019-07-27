@@ -25,15 +25,22 @@ class Youtube():
         self.browser.find_element_by_name('identifier').send_keys('gladooosss@gmail.com')
         self.browser.find_element_by_xpath('//*[@id="identifierNext"]/span').click()
         sleep(1)
-        self.browser.find_element_by_name('password').send_keys('Iamgladyoucame')
+        while(1):
+            try:
+                self.browser.find_element_by_name('password').send_keys('Iamgladyoucame')
+                break;
+            except:
+                continue;
         self.browser.find_element_by_xpath('//*[@id="passwordNext"]/span/span').click()
         sleep(2)
 
         #self.playsong()
-       
+
 
     def playsong(self,message):
         #obj = TTS("Playing "+self.song)
+        if self.VIDEOSTAT!=-1:
+            self.browser.get("https://www.google.com")
         self.song = message
         search = self.browser.find_element_by_name('q')
         search.send_keys(self.song+" Youtube")
@@ -50,7 +57,7 @@ class Youtube():
         self.VIDEOSTAT = 1
 
     def instructions(self,msg):
-        
+
         print(msg,self.VIDEOSTAT)
 
         if ("PLAY" in msg or "RESUME" in msg) and self.VIDEOSTAT==0:
@@ -81,7 +88,7 @@ class Youtube():
                     my_playlist_file.seek(0)
                     json.dump(data,my_playlist_file)
                     my_playlist_file.truncate()
-                
+
         elif("REMOVE" in msg and "PLAYLIST" in msg):
             url = self.browser.current_url
             print(url)
@@ -99,7 +106,7 @@ class Youtube():
                     my_playlist_file.seek(0)
                     json.dump(data,my_playlist_file)
                     my_playlist_file.truncate()
-            
+
         elif("NEXT" in msg):
             next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
 

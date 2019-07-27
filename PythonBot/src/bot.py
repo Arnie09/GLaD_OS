@@ -44,7 +44,7 @@ def mqttclient():
         youtube_instance.play_playlist()
 
     def iotControl_subroutine(message):
-        
+
         iotControl_obj =iotControl(message)
         del iotControl_obj
 
@@ -62,17 +62,17 @@ def mqttclient():
         pygame.mixer.Channel(2).play(song)
 
     def send_instructions_to_youtube(message):
-        
+
         global SongPlaying
         global youtube_instance
         is_song_still_playing  = youtube_instance.instructions(message)
         if(is_song_still_playing == False):
             SongPlaying = False
             SongName = ""
-        
+
 
     def play_songs_from_youtube(message):
-        
+
         global youtube_instance
         global SongPlaying
         global SongName
@@ -83,7 +83,7 @@ def mqttclient():
         print("SongPlaying = ",SongPlaying)
 
     def on_connect(client,userdata,flags,rc):
-        
+
         global user_id
         print("subscribing to: GladOs/messages/"+user_id)
         client.subscribe("GladOs/messages/"+user_id)
@@ -104,38 +104,40 @@ def mqttclient():
 
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
-            
+
             message = message.upper()
             print("Bot.py mqtt client:",message)
             '''here we list all the choices'''
 
-            if("TURN" in message or "LIGHT" in message or "FAN" in message):
+            if("TURN" in message or "LIGHT" in message or "FAN" in message) and "PLAY" not in message:
                 print("IOT Call...")
-                iotControl_subroutine(message)
-                    
-            elif("PLAY" in message and "SONG" in message):
+                #iotControl_subroutine(message)
+
+            elif("PLAY " in message and "PLAYLIST" in message):
+                print("Calling play my playlist")
+                play_my_playlist()
+
+            elif("PLAY " in message and "SONG" in message):
                 print("Playing anthem....")
                 play_anthem()
 
-            elif(("PAUSE" in message or "PLAY" in message or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message or "NEXT" in message or "ADD TO PLAYLIST" in message) and SongPlaying == True):
-                print("Sending message to instruction!")
-                send_instructions_to_youtube(message)
 
-            elif("PLAY" in message and "SONG" not in message and "LIST" not in message):
+
+            elif("PLAY " in message and len(message)>5):
                 print("Playsongs from youtube....")
                 play_songs_from_youtube(message)
 
-            elif ("PLAY" in message and "PLAYLIST" in message):
-                print("Calling play my playlist")
-                play_my_playlist()
-            
+            elif(("PAUSE" in message or ("PLAY" in message and len(message)<5) or "RESUME" in message or "STOP" in message or "QUIT" in message or "EXIT" in message or "NEXT" in message or (("ADD" in message or "REMOVE" in message or "DELETE" in message) and  "PLAYLIST" in message)) and SongPlaying == True):
+                print("Sending message to instruction!")
+                send_instructions_to_youtube(message)
+
             elif("TELL ME ABOUT" in message):
                 print("Search from wikipedia...")
                 wikipedia_search(message)
 
             elif ("PLAY" not in message and "PAUSE" not in message):
                 print("Time for dialogflow...")
-                instantiate_dialogflow(message) 
+                instantiate_dialogflow(message)
 
     client = mqtt.Client()
 
@@ -153,9 +155,9 @@ def mqttclient_to_get_userid():
         print("onexecute")
         client.disconnect
         mqtt_thred_to_get_userid.exit()
-   
+
     def on_connect(client,userdata,flags,rc):
-        
+
         print("Subscribed to channel user id")
         client.subscribe("GladOs/userid")
 
@@ -190,7 +192,7 @@ with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
     print(user_id)
     if(user_id == ""):
         mqtt_thred_to_get_userid = threading.Thread(target = mqttclient_to_get_userid)
-        mqtt_thred_to_get_userid.start()    
+        mqtt_thred_to_get_userid.start()
 
 '''this loop checks whether the username had been passed or not.'''
 '''if new username is passed it is written onto disk'''
@@ -203,6 +205,6 @@ while(True):
             user_id_file.truncate()
         break
 
-'''calling the main message thread from here'''         
+'''calling the main message thread from here'''
 mqtt_thred = threading.Thread(target = mqttclient)
 mqtt_thred.start()
