@@ -73,7 +73,9 @@ class Youtube():
             return False
 
         elif("ADD TO PLAYLIST" in msg):
-            url = self.browser.current_url
+
+            url = self.browser.find_element_by_xpath('//*[@id="container"]/h1/yt-formatted-string').text
+            print(url)
             with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
                 data = json.load(my_playlist_file)
                 if(url not in data["songs"]):
@@ -90,7 +92,7 @@ class Youtube():
                     my_playlist_file.truncate()
 
         elif("REMOVE" in msg and "PLAYLIST" in msg):
-            url = self.browser.current_url
+            url = self.browser.find_element_by_xpath('//*[@id="container"]/h1/yt-formatted-string').text
             print(url)
             with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as my_playlist_file:
                 data = json.load(my_playlist_file)

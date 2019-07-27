@@ -135,7 +135,7 @@ def mqttclient():
                 print("Search from wikipedia...")
                 wikipedia_search(message)
 
-            elif ("PLAY" not in message and "PAUSE" not in message):
+            elif ("PLAY " not in message and "PAUSE" not in message):
                 print("Time for dialogflow...")
                 instantiate_dialogflow(message)
 
