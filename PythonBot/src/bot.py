@@ -10,16 +10,24 @@ import json
 from dialogflow_class import DialogFlow
 from youtube import Youtube
 import wikipedia
+import hashlib
+
+
 
 counter = 0
 message_main  = ""
 user_id = ""
 mqtt_thred_to_get_userid = None
-youtube_instance = Youtube()
+youtube_instance = None
 SongPlaying = False
 SongName = ""
+password = ""
 
 def mqttclient():
+
+    global user_id
+    global youtube_instance
+    global password
 
     def wikipedia_search(message):
         global SongPlaying
@@ -94,6 +102,40 @@ def mqttclient():
         if(df_obj.response):
             TTS(df_obj.response)
 
+    def setpassword(message):
+        global youtube_instance
+        global password
+        global user_id
+        print("In set password")
+
+        with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
+            data = json.load(passfile)
+            email = data["email"]
+            passs = data["password"]
+            credentials = message[9:]
+            username,password_ = credentials.split(",")
+            print(username)
+            print(password_)
+            if passs == "":
+                print("Here")
+                hashpass = hashlib.sha256(str.enncode(password_)).hexdigest()
+                print(hashpass)
+                data = {"email":username,"password":hashpass}
+                passfile.seek(0)
+                json.dump(data,passfile)
+                passfile.truncate()
+                youtube_instance = Youtube(username,password_)
+                password = password_
+            else:
+                if(hashlib.sha256(str.enncode(password_)).hexdigest() == passs):
+                    youtube_instance = Youtube(username,password_)
+                else:
+                    client.publish("GladOs/messages/"+user_id,"Wrong password enter again!")
+
+    def initialinteraction(client):
+        if password == "":
+            client.publish("GladOs/messages/"+user_id,"Enter the password")
+
     def on_message(client,userdata,mssg):
         global youtube_instance
         global SongPlaying
@@ -105,6 +147,10 @@ def mqttclient():
 
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
+
+            if("Password" in message):
+                print("Calling password")
+                setpassword(message)
 
             message = message.upper()
             print("Bot.py mqtt client:",message)
@@ -133,10 +179,16 @@ def mqttclient():
             elif("TELL ME ABOUT" in message):
                 print("Search from wikipedia...")
                 wikipedia_search(message)
+            
+            
 
-            elif ("PLAY " not in message and "PAUSE" not in message):
+            elif("CALLING ALPHABASE" in message):
+                initialinteraction(client)
+
+            elif ("PLAY " not in message and "PAUSE" not in message and "PASSWORD" not in message):
                 print("Time for dialogflow...")
                 instantiate_dialogflow(message)
+
 
     client = mqtt.Client()
 
@@ -144,6 +196,7 @@ def mqttclient():
     client.on_message = on_message
 
     client.connect("broker.hivemq.com",1883,60)
+    
 
     client.loop_forever()
 

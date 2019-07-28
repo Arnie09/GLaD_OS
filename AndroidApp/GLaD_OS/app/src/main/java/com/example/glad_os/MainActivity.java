@@ -18,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
@@ -42,7 +43,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -79,7 +82,10 @@ public class MainActivity extends AppCompatActivity
     String user_id;
     FirebaseFirestore db;
     int error;
+    IMqttToken token;
     public static  int no_users;
+    String email;
+    String password;
 
 
     @Override
@@ -93,6 +99,8 @@ public class MainActivity extends AppCompatActivity
 
         error = 0;
         text_input = findViewById(R.id.inputText);
+        Button button = findViewById(R.id.button);
+
         databaseHandler = new DatabaseHandler(this);
 
         returnedText = (TextView) findViewById(R.id.resultText);
@@ -146,30 +154,9 @@ public class MainActivity extends AppCompatActivity
 
         /* Establishing Mqtt client connection*/
 
-        String clientId = MqttClient.generateClientId();
-        client =
-                new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
-                        clientId);
+        connectToMQTT();
 
-        try {
-            IMqttToken token = client.connect();
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    Toast.makeText(MainActivity.this, "Connected to server!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    Toast.makeText(MainActivity.this, "Failed to connect to server!", Toast.LENGTH_SHORT).show();
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+        //sending the username or making one for first time use
             final String userid = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("userid", "defaultStringIfNothingFound");
 
             Log.i("Userid",userid);
@@ -261,6 +248,123 @@ public class MainActivity extends AppCompatActivity
             else{
                 user_id = userid;
             }
+            email = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("email", "defaultStringIfNothingFound");
+            password = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", "defaultStringIfNothingFound");
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendMessageMQTT("CALLING ALPHABASE","GladOs/messages/" + user_id);
+                    Log.i("GLADOS",String.valueOf(client.isConnected()));
+                    if(client.isConnected()) {
+                        Log.i("GLADOS","HERE");
+                        try {
+                            int qos = 1;
+                            client.subscribe("GladOs/messages/" + user_id, qos);
+                            client.setCallback(new MqttCallback() {
+                                @Override
+                                public void connectionLost(Throwable cause) {
+
+                                }
+
+                                @Override
+                                public void messageArrived(String topic, MqttMessage message) throws Exception {
+                                    Log.i("GLADOS",new String(message.getPayload()));
+                                    if(new String(message.getPayload()).equals("Enter the password"))
+                                        parseMqttMessage(new String(message.getPayload()));
+
+                                }
+
+                                @Override
+                                public void deliveryComplete(IMqttDeliveryToken token) {
+
+                                }
+                            });
+                        }
+                        catch (MqttException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+
+    }
+
+    private void parseMqttMessage(String s) {
+        Log.i("GLADOS parseMqTT",email);
+            if(email.equals("defaultStringIfNothingFound")){
+
+                    Log.i("GLADOS","HEREHERE");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Enter the email and password");
+                    // Get the layout inflater
+                    LayoutInflater inflater = this.getLayoutInflater();
+                    Log.i("GLADOS","HEREHERE");
+                    // Inflate and set the layout for the dialog
+                    // Pass null as the parent view because its going in the dialog layout
+                    builder.setView(inflater.inflate(R.layout.alertlayout, null))
+                            // Add action buttons
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // sign in the user ...
+                                    EditText input_email = (EditText) ((AlertDialog) dialog).findViewById(R.id.Email);
+                                    EditText input_password = (EditText) ((AlertDialog) dialog).findViewById(R.id.Password);
+                                    String entered_email = input_email.getText().toString();
+                                    String entered_password = input_password.getText().toString();
+                                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email",entered_email).apply();
+                                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password",entered_password).apply();
+                                    sendMessageMQTT("Password:"+entered_email+","+entered_password,"GladOs/messages/" + user_id);
+
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                Log.i("GLADOS","HEREHERE");
+                AlertDialog alert2 = builder.create();
+                builder.show();
+
+                Button Ok_button = alert2.getButton(DialogInterface.BUTTON_POSITIVE);
+                Ok_button.setTextColor(Color.BLUE);
+
+                Button Cancel_button = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
+                Cancel_button.setTextColor(Color.BLUE);
+            }
+            else{
+                sendMessageMQTT("Password:"+email+","+password,"GladOs/messages/" + user_id);
+            }
+        }
+
+
+    private void connectToMQTT() {
+        String clientId = MqttClient.generateClientId();
+        client =
+                new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
+                        clientId);
+
+        try {
+            token = client.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    Toast.makeText(MainActivity.this, "Connected to server!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Toast.makeText(MainActivity.this, "Failed to connect to server!", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
 
