@@ -87,6 +87,7 @@ def mqttclient():
         global user_id
         print("subscribing to: GladOs/messages/"+user_id)
         client.subscribe("GladOs/messages/"+user_id)
+        TTS("I am ready to take your commands master!")
 
     def instantiate_dialogflow(message):
         df_obj = DialogFlow(message)
@@ -111,7 +112,7 @@ def mqttclient():
 
             if("TURN" in message or "LIGHT" in message or "FAN" in message) and "PLAY" not in message:
                 print("IOT Call...")
-                #iotControl_subroutine(message)
+                iotControl_subroutine(message)
 
             elif("PLAY " in message and "PLAYLIST" in message):
                 print("Calling play my playlist")
@@ -120,8 +121,6 @@ def mqttclient():
             elif("PLAY " in message and "SONG" in message):
                 print("Playing anthem....")
                 play_anthem()
-
-
 
             elif("PLAY " in message and len(message)>5):
                 print("Playsongs from youtube....")

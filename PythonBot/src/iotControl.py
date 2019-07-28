@@ -1,11 +1,14 @@
 from TTS_engine import TTS
 import os
 import sys
+import RPi.GPIO as GPIO
 
 class iotControl():
 
     def __init__(self,message):
         print("Here")
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(2, GPIO.OUT)
         self.message = message
         self.determine()
 
@@ -22,24 +25,22 @@ class iotControl():
             '''turn lights on'''
             obj = TTS("Turning lights on!")
             del obj
-            print("Here")
-            
+            print("Here")    
 
         elif "OFF" in self.message:
             '''turn lights off'''
             obj = TTS("Turning lights off!")
             del obj
             
-        
-        
-
     def fans(self):
 
         if("ON" in self.message):
             '''turn lights on'''
+            print("here")
             TTS("Turning fans on!")
-
+            GPIO.output(2,False)
 
         elif "OFF" in self.message:
             '''turn lights off'''
             TTS("Turning fans off!")
+            GPIO.output(2,True)
