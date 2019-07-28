@@ -12,7 +12,7 @@ from selenium.webdriver.common.keys import Keys
 
 class Youtube():
 
-    def __init__(self,password,email):
+    def __init__(self,email,password):
         self.song = ""
         self.CHROMESTAT=0
         self.VIDEOSTAT=-1

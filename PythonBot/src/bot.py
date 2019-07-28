@@ -118,7 +118,7 @@ def mqttclient():
             print(password_)
             if passs == "":
                 print("Here")
-                hashpass = hashlib.sha256(str.enncode(password_)).hexdigest()
+                hashpass = hashlib.sha256(str.encode(password_)).hexdigest()
                 print(hashpass)
                 data = {"email":username,"password":hashpass}
                 passfile.seek(0)
@@ -127,7 +127,9 @@ def mqttclient():
                 youtube_instance = Youtube(username,password_)
                 password = password_
             else:
-                if(hashlib.sha256(str.enncode(password_)).hexdigest() == passs):
+
+                if(hashlib.sha256(str.encode(password_)).hexdigest() == passs):
+                    print("Here")
                     youtube_instance = Youtube(username,password_)
                 else:
                     client.publish("GladOs/messages/"+user_id,"Wrong password enter again!")
