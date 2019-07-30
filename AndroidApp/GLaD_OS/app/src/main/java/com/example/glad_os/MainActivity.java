@@ -30,6 +30,8 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "SpeechRecognizer";
-    ConstraintLayout parent_layout;
+    LinearLayout parent_layout;
     Boolean recordButtonStatus;
     FloatingActionButton fab;
     MqttAndroidClient client;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity
     String password;
     Switch lights;
     Switch fans;
+    ProgressBar progressBar;
 
 
     @Override
@@ -110,13 +113,14 @@ public class MainActivity extends AppCompatActivity
         /* Making all connections with the xml */
         fab = findViewById(R.id.fab);
         fab.hide();
-        parent_layout = findViewById(R.id.constraintlayout);
+        parent_layout = findViewById(R.id.main_ll);
         text_input = findViewById(R.id.inputText);
         returnedText = (TextView) findViewById(R.id.resultText);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         lights = findViewById(R.id.lights_switch);
         fans = findViewById(R.id.fan_switch);
+        progressBar = findViewById(R.id.progressbar);
 
         parent_layout.setVisibility(View.INVISIBLE);
         error = 0;
@@ -311,6 +315,7 @@ public class MainActivity extends AppCompatActivity
                                 PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email", entered_email).apply();
                                 PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password", entered_password).apply();
                                 sendMessageMQTT("Password:" + entered_email + "," + entered_password, "GladOs/messages/" + user_id);
+                                progressBar.setVisibility(View.VISIBLE);
 
                             }
                         })
@@ -322,11 +327,6 @@ public class MainActivity extends AppCompatActivity
                 AlertDialog alert2 = builder.create();
                 builder.show();
 
-                Button Ok_button = alert2.getButton(DialogInterface.BUTTON_POSITIVE);
-                Ok_button.setBackgroundColor(Color.BLUE);
-
-                Button Cancel_button = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Cancel_button.setBackgroundColor(Color.BLUE);
             } else {
                 sendMessageMQTT("Password:" + email + "," + password, "GladOs/messages/" + user_id);
                 Toast.makeText(this, "Please wait while Glados cooks up the magic!", Toast.LENGTH_LONG).show();
@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity
         } else if (s.equals("Everything OK")){
             parent_layout.setVisibility(View.VISIBLE);
             fab.show();
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
