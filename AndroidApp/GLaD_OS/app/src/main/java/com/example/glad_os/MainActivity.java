@@ -251,42 +251,6 @@ public class MainActivity extends AppCompatActivity
             email = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("email", "defaultStringIfNothingFound");
             password = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", "defaultStringIfNothingFound");
 
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendMessageMQTT("CALLING ALPHABASE","GladOs/messages/" + user_id);
-                    Log.i("GLADOS",String.valueOf(client.isConnected()));
-                    if(client.isConnected()) {
-                        Log.i("GLADOS","HERE");
-                        try {
-                            int qos = 1;
-                            client.subscribe("GladOs/messages/" + user_id, qos);
-                            client.setCallback(new MqttCallback() {
-                                @Override
-                                public void connectionLost(Throwable cause) {
-
-                                }
-
-                                @Override
-                                public void messageArrived(String topic, MqttMessage message) throws Exception {
-                                    Log.i("GLADOS",new String(message.getPayload()));
-                                    if(new String(message.getPayload()).equals("Enter the password"))
-                                        parseMqttMessage(new String(message.getPayload()));
-
-                                }
-
-                                @Override
-                                public void deliveryComplete(IMqttDeliveryToken token) {
-
-                                }
-                            });
-                        }
-                        catch (MqttException e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
 
 
     }
@@ -297,7 +261,6 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("GLADOS","HEREHERE");
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Enter the email and password");
                     // Get the layout inflater
                     LayoutInflater inflater = this.getLayoutInflater();
                     Log.i("GLADOS","HEREHERE");
@@ -411,7 +374,40 @@ public class MainActivity extends AppCompatActivity
             finish();
             return true;
         }
+        else if(id == R.id.action_connect){
+            sendMessageMQTT("CALLING ALPHABASE","GladOs/messages/" + user_id);
+            Log.i("GLADOS",String.valueOf(client.isConnected()));
+            if(client.isConnected()) {
+                Log.i("GLADOS","HERE");
+                try {
+                    int qos = 1;
+                    client.subscribe("GladOs/messages/raspberry2phone" + user_id, qos);
+                    client.setCallback(new MqttCallback() {
+                        @Override
+                        public void connectionLost(Throwable cause) {
 
+                        }
+
+                        @Override
+                        public void messageArrived(String topic, MqttMessage message) throws Exception {
+                            Log.i("GLADOS",new String(message.getPayload()));
+                            if(new String(message.getPayload()).equals("Enter the password"))
+                                parseMqttMessage(new String(message.getPayload()));
+
+                        }
+
+                        @Override
+                        public void deliveryComplete(IMqttDeliveryToken token) {
+
+                        }
+                    });
+                }
+                catch (MqttException e){
+                    e.printStackTrace();
+                }
+            }
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -535,7 +531,15 @@ public class MainActivity extends AppCompatActivity
     public void sendMessageMQTT(String text,String channel){
         if(user_id.length()>0) {
 
-
+            if(client.isConnected()!= true) {
+                connectToMQTT();
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
             String payload = text;
             byte[] encodedPayload = new byte[0];
             try {

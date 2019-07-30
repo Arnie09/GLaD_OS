@@ -1,27 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/backgnd_grad"
+    android:padding="30dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter email ID" />
+        android:text="@string/alertlayout_title"
+        android:textStyle="bold"
+        android:textColor="@color/colorAccent"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:textAlignment="center"/>
 
-    <EditText
+    <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:id="@+id/Email" />
+        android:orientation="vertical"
+        android:padding="5dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Enter Password" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter email ID"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"/>
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Text 4"
-        android:id="@+id/Password" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:textColor="@color/colorAccent"
+            android:background="@color/semiTransparentBackground"
+            android:id="@+id/Email" />
+
+    </LinearLayout>
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       android:id="@+id/ll2"
+       android:padding="5dp">
+
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Enter Password"
+           android:textColor="@color/colorAccent"
+           android:textStyle="bold"/>
+
+       <EditText
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:hint="Text 4"
+           android:background="@color/semiTransparentBackground"
+           android:inputType="textPassword"
+           android:id="@+id/Password" />
+
+   </LinearLayout>
+
+
 </LinearLayout>
