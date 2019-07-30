@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
 
         error = 0;
         text_input = findViewById(R.id.inputText);
-        Button button = findViewById(R.id.button);
+
 
         databaseHandler = new DatabaseHandler(this);
 
