@@ -15,6 +15,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import android.text.InputType;
 import android.util.Log;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "SpeechRecognizer";
+    ConstraintLayout parent_layout;
     Boolean recordButtonStatus;
     FloatingActionButton fab;
     MqttAndroidClient client;
@@ -96,6 +98,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
         db = FirebaseFirestore.getInstance();
+        fab.hide();
+        parent_layout = findViewById(R.id.constraintlayout);
+        parent_layout.setVisibility(View.INVISIBLE);
 
         error = 0;
         text_input = findViewById(R.id.inputText);
@@ -126,11 +131,12 @@ public class MainActivity extends AppCompatActivity
                 /* Trigger voice
                 recording here
                  */
-                if(recordButtonStatus){
+
+                if (recordButtonStatus) {
                     recordButtonStatus = false;
                     speech.stopListening();
                     fab.setBackground(getDrawable(R.drawable.microphone_button_off));
-                }else{
+                } else {
                     ActivityCompat.requestPermissions
                             (MainActivity.this,
                                     new String[]{Manifest.permission.RECORD_AUDIO},
@@ -140,8 +146,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 Snackbar.make(view, "Recording audio", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-            }
+                }
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -256,38 +261,35 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void parseMqttMessage(String s) {
-        Log.i("GLADOS parseMqTT",email);
-            if(email.equals("defaultStringIfNothingFound")){
+        if (s.equals("Enter the password")) {
+            if (email.equals("defaultStringIfNothingFound")) {
 
-                    Log.i("GLADOS","HEREHERE");
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    // Get the layout inflater
-                    LayoutInflater inflater = this.getLayoutInflater();
-                    Log.i("GLADOS","HEREHERE");
-                    // Inflate and set the layout for the dialog
-                    // Pass null as the parent view because its going in the dialog layout
-                    builder.setView(inflater.inflate(R.layout.alertlayout, null))
-                            // Add action buttons
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // sign in the user ...
-                                    EditText input_email = (EditText) ((AlertDialog) dialog).findViewById(R.id.Email);
-                                    EditText input_password = (EditText) ((AlertDialog) dialog).findViewById(R.id.Password);
-                                    String entered_email = input_email.getText().toString();
-                                    String entered_password = input_password.getText().toString();
-                                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email",entered_email).apply();
-                                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password",entered_password).apply();
-                                    sendMessageMQTT("Password:"+entered_email+","+entered_password,"GladOs/messages/" + user_id);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                // Get the layout inflater
+                LayoutInflater inflater = this.getLayoutInflater();
+                // Inflate and set the layout for the dialog
+                // Pass null as the parent view because its going in the dialog layout
+                builder.setView(inflater.inflate(R.layout.alertlayout, null))
+                        // Add action buttons
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                // sign in the user ...
+                                EditText input_email = (EditText) ((AlertDialog) dialog).findViewById(R.id.Email);
+                                EditText input_password = (EditText) ((AlertDialog) dialog).findViewById(R.id.Password);
+                                String entered_email = input_email.getText().toString();
+                                String entered_password = input_password.getText().toString();
+                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email", entered_email).apply();
+                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password", entered_password).apply();
+                                sendMessageMQTT("Password:" + entered_email + "," + entered_password, "GladOs/messages/" + user_id);
 
-                                }
-                            })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                Log.i("GLADOS","HEREHERE");
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
                 AlertDialog alert2 = builder.create();
                 builder.show();
 
@@ -296,11 +298,15 @@ public class MainActivity extends AppCompatActivity
 
                 Button Cancel_button = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
                 Cancel_button.setTextColor(Color.BLUE);
+            } else {
+                sendMessageMQTT("Password:" + email + "," + password, "GladOs/messages/" + user_id);
+                Toast.makeText(this, "Please wait while Glados cooks up the magic!", Toast.LENGTH_LONG).show();
             }
-            else{
-                sendMessageMQTT("Password:"+email+","+password,"GladOs/messages/" + user_id);
-            }
+        } else if (s.equals("Everything OK")){
+            parent_layout.setVisibility(View.VISIBLE);
+            fab.show();
         }
+    }
 
 
     private void connectToMQTT() {
@@ -391,8 +397,8 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
                             Log.i("GLADOS",new String(message.getPayload()));
-                            if(new String(message.getPayload()).equals("Enter the password"))
-                                parseMqttMessage(new String(message.getPayload()));
+
+                            parseMqttMessage(new String(message.getPayload()));
 
                         }
 

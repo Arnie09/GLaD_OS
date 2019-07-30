@@ -95,14 +95,14 @@ def mqttclient():
         global user_id
         print("subscribing to: GladOs/messages/"+user_id)
         client.subscribe("GladOs/messages/"+user_id)
-        TTS("I am ready to take your commands master!")
+        
 
     def instantiate_dialogflow(message):
         df_obj = DialogFlow(message)
         if(df_obj.response):
             TTS(df_obj.response)
 
-    def setpassword(message):
+    def setpassword(message,client):
         global youtube_instance
         global password
         global user_id
@@ -126,17 +126,21 @@ def mqttclient():
                 passfile.truncate()
                 youtube_instance = Youtube(username,password_)
                 password = password_
+                client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
+                TTS("I am ready to take your commands master!")
             else:
 
                 if(hashlib.sha256(str.encode(password_)).hexdigest() == passs):
                     print("Here")
                     youtube_instance = Youtube(username,password_)
+                    client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
+                    TTS("I am ready to take your commands master!")
                 else:
-                    client.publish("GladOs/messages/"+user_id,"Wrong password enter again!")
+                    client.publish("GladOs/messages/raspberry2phone"+user_id,"Wrong password enter again!")
 
     def initialinteraction(client):
         if password == "":
-            client.publish("GladOs/messages/"+user_id,"Enter the password")
+            client.publish("GladOs/messages/raspberry2phone"+user_id,"Enter the password")
 
     def on_message(client,userdata,mssg):
         global youtube_instance
@@ -150,9 +154,11 @@ def mqttclient():
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
 
-            if("Password" in message):
+            if("Password" in message and youtube_instance == None):
                 print("Calling password")
-                setpassword(message)
+                setpassword(message,client)
+            elif("Password" in message):
+                client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
 
             message = message.upper()
             print("Bot.py mqtt client:",message)
