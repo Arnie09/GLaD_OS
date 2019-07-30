@@ -55,11 +55,11 @@
         android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/relativelayout" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/relativelayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="27dp"
         android:background="@color/semiTransparentBackground"
@@ -70,46 +70,56 @@
 
         <EditText
             android:id="@+id/inputText"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="15dp" />
 
         <Button
             android:id="@+id/SendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_margin="15dp"
             android:onClick="TextSend"
             android:text="Send" />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <Switch
-        android:id="@+id/lights_switch"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/switch_holder_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="35dp"
-        android:layout_marginStart="298dp"
-        android:layout_marginTop="211dp"
-        android:layout_marginEnd="167dp"
-        android:text="Lights"
-        android:textColor="@color/colorAccent"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5">
 
-    <Switch
-        android:id="@+id/fan_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="35dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="325dp"
-        android:layout_marginBottom="393dp"
-        android:text="Fans"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Switch
+            android:id="@+id/lights_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginLeft="35dp"
+            android:text="Lights"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <Switch
+            android:id="@+id/fan_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginLeft="35dp"
+            android:layout_marginBottom="35dp"
+            android:text="Fans"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/textView3"

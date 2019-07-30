@@ -26,7 +26,9 @@ import android.view.MenuItem;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity
     public static  int no_users;
     String email;
     String password;
+    Switch lights;
+    Switch fans;
 
 
     @Override
@@ -96,23 +100,29 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        fab = findViewById(R.id.fab);
+
+        /* database instantiation */
         db = FirebaseFirestore.getInstance();
-        fab.hide();
-        parent_layout = findViewById(R.id.constraintlayout);
-        parent_layout.setVisibility(View.INVISIBLE);
-
-        error = 0;
-        text_input = findViewById(R.id.inputText);
-
-
         databaseHandler = new DatabaseHandler(this);
 
+        /* Making all connections with the xml */
+        fab = findViewById(R.id.fab);
+        fab.hide();
+        parent_layout = findViewById(R.id.constraintlayout);
+        text_input = findViewById(R.id.inputText);
         returnedText = (TextView) findViewById(R.id.resultText);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        lights = findViewById(R.id.lights_switch);
+        fans = findViewById(R.id.fan_switch);
+
+        parent_layout.setVisibility(View.INVISIBLE);
+        error = 0;
         recordButtonStatus = false;
         currentPartialText = "";
         currentConfirmedText = "";
         user_id = "";
+
 
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         Log.i(LOG_TAG, "isRecognitionAvailable: " + SpeechRecognizer.isRecognitionAvailable(this));
@@ -149,8 +159,7 @@ public class MainActivity extends AppCompatActivity
                 }
         });
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -256,7 +265,25 @@ public class MainActivity extends AppCompatActivity
             email = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("email", "defaultStringIfNothingFound");
             password = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", "defaultStringIfNothingFound");
 
+            lights.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked == true)
+                        sendMessageMQTT("Turn lights on","GladOs/messages/" + user_id);
+                    else
+                        sendMessageMQTT("turn lights off","GladOs/messages/" + user_id);
+                }
+            });
 
+            fans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked == true)
+                        sendMessageMQTT("Turn fans on","GladOs/messages/" + user_id);
+                    else
+                        sendMessageMQTT("turn fans off","GladOs/messages/" + user_id);
+                }
+            });
 
     }
 
@@ -294,10 +321,10 @@ public class MainActivity extends AppCompatActivity
                 builder.show();
 
                 Button Ok_button = alert2.getButton(DialogInterface.BUTTON_POSITIVE);
-                Ok_button.setTextColor(Color.BLUE);
+                Ok_button.setBackgroundColor(Color.BLUE);
 
                 Button Cancel_button = alert2.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Cancel_button.setTextColor(Color.BLUE);
+                Cancel_button.setBackgroundColor(Color.BLUE);
             } else {
                 sendMessageMQTT("Password:" + email + "," + password, "GladOs/messages/" + user_id);
                 Toast.makeText(this, "Please wait while Glados cooks up the magic!", Toast.LENGTH_LONG).show();
