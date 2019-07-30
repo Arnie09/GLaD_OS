@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -268,7 +270,7 @@ public class MainActivity extends AppCompatActivity
             lights.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked == true)
+                    if(isChecked)
                         sendMessageMQTT("Turn lights on","GladOs/messages/" + user_id);
                     else
                         sendMessageMQTT("turn lights off","GladOs/messages/" + user_id);
@@ -278,7 +280,7 @@ public class MainActivity extends AppCompatActivity
             fans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked == true)
+                    if(isChecked)
                         sendMessageMQTT("Turn fans on","GladOs/messages/" + user_id);
                     else
                         sendMessageMQTT("turn fans off","GladOs/messages/" + user_id);
@@ -298,7 +300,7 @@ public class MainActivity extends AppCompatActivity
                 // Pass null as the parent view because its going in the dialog layout
                 builder.setView(inflater.inflate(R.layout.alertlayout, null))
                         // Add action buttons
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(Html.fromHtml("<font color='#3300FF'>Ok</font>"), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 // sign in the user ...
@@ -312,7 +314,7 @@ public class MainActivity extends AppCompatActivity
 
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(Html.fromHtml("<font color='#3300FF'>Cancel</font>"), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }

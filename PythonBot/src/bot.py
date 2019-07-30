@@ -141,6 +141,8 @@ def mqttclient():
     def initialinteraction(client):
         if password == "":
             client.publish("GladOs/messages/raspberry2phone"+user_id,"Enter the password")
+        else:
+            client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
 
     def on_message(client,userdata,mssg):
         global youtube_instance
