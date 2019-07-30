@@ -129,6 +129,9 @@ public class MainActivity extends AppCompatActivity
         currentConfirmedText = "";
         user_id = "";
 
+        String clientId = MqttClient.generateClientId();
+        client = new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
+                        clientId);
 
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         Log.i(LOG_TAG, "isRecognitionAvailable: " + SpeechRecognizer.isRecognitionAvailable(this));
@@ -340,10 +343,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private void connectToMQTT() {
-        String clientId = MqttClient.generateClientId();
-        client =
-                new MqttAndroidClient(this.getApplicationContext(), "tcp://broker.hivemq.com:1883",
-                        clientId);
+
 
         try {
             token = client.connect();
