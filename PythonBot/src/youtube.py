@@ -51,8 +51,15 @@ class Youtube():
             self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
 
     def play_playlist(self):
-        self.browser.get('https://www.youtube.com/playlist?list=PLRerImSgf8rZboaUasZfy_Mi4_WTKTyRb')
-        self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer').click()
+        self.browser.get('https://www.youtube.com/')
+        self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
+        sleep(1)
+        a=self.browser.find_elements_by_id('endpoint')
+        for i in a:
+            print(i.get_attribute("href"))
+        self.browser.get(a[10].get_attribute("href"))
+        self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer/yt-formatted-string').click()
+
         self.VIDEOSTAT = 1
 
     def instructions(self,msg):
@@ -110,7 +117,7 @@ class Youtube():
 
         elif("NEXT" in msg):
             next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
- 
+
         return True
 
 
