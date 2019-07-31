@@ -56,7 +56,7 @@
        <EditText
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
-           android:hint="Text 4"
+           android:hint="Enter password"
            android:background="@color/semiTransparentBackground"
            android:inputType="textPassword"
            android:id="@+id/Password" />
