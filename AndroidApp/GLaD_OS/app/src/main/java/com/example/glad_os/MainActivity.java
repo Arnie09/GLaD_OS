@@ -471,7 +471,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_about) {
-            // Handle the camera action
+            // Handle the about action
+            startActivity(new Intent(getApplicationContext(),AboutActivity.class));
         } else if (id == R.id.nav_history) {
             startActivity(new Intent(getApplicationContext(), HistoryActivity.class));
         }

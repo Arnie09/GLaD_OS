@@ -18,4 +18,24 @@
     <string name="menu_history">History</string>
     <string name="action_exit">Exit</string>
     <string name="action_connect">Connect</string>
+    <string name="about_html"><![CDATA[
+    <h2>GLADOS Your very own personal assistant!</h2>
+    <br>
+    <p>This project was started as a summer project. It is aimed at ful filling the simple needs of a user and to work as a home assistant.
+    The name has obviously been inspired by the famous antagonist of the game series Portal. </p>
+    <a href = "https://store.steampowered.com/app/400/Portal/">Check out more about Glados here.</a>
+    <br>
+    <h3>So what can Glados do?</h3>
+    <br>
+    <p>Glados can take your voice notes and operate on them....Turn yours lights on and off, play music, save your playlist and do much more</p>
+    <a href = "https://github.com/Arnie09/GLaD_OS">Check out the detailed description here</a>
+    <br>
+    <h3>The team:</h3>
+    <br>
+    <a href = "https://www.linkedin.com/in/arnab-chanda-aa671017a/">Arnab Chanda</a>
+    <br>
+    <a href = "https://www.linkedin.com/in/sandeep-singh-850157184/">Sandeep Singh</a>
+    <br>
+    <a href = "https://www.linkedin.com/in/somdutta-roy-396329178/">Somdutta Roy</a>
+    ]]></string>
 </resources>
