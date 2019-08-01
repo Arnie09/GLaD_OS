@@ -30,12 +30,16 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -71,6 +75,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener ,RecognitionListener {
 
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity
     FirebaseFirestore db;
     int error;
     IMqttToken token;
+    int OptionsMenuConnectButton;
     public static  int no_users;
     String email;
     String password;
@@ -250,6 +257,14 @@ public class MainActivity extends AppCompatActivity
                                     }
                                 });
 
+                        Target viewTarget = new ViewTarget(OptionsMenuConnectButton, MainActivity.this);
+                        new ShowcaseView.Builder(MainActivity.this)
+                                .setTarget(viewTarget)
+                                .setContentTitle("Welcome!")
+                                .setContentText("Click on this button to connect to server!")
+                                .singleShot(42)
+                                .build();
+
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -395,6 +410,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem connectButton = menu.findItem(R.id.action_connect);
+        OptionsMenuConnectButton = connectButton.getItemId();
         return true;
     }
 
@@ -454,7 +471,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_about) {
-            // Handle the camera action
+            // Handle the about action
+            startActivity(new Intent(getApplicationContext(),AboutActivity.class));
         } else if (id == R.id.nav_history) {
             startActivity(new Intent(getApplicationContext(), HistoryActivity.class));
         }

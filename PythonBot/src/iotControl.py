@@ -9,6 +9,7 @@ class iotControl():
         print("Here")
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setup(2, GPIO.OUT)
+        # GPIO.setup(3,GPIO.OUT)
         self.message = message
         self.determine()
 
@@ -25,12 +26,14 @@ class iotControl():
             '''turn lights on'''
             obj = TTS("Turning lights on!")
             del obj
+            # GPIO.output(3,False)
             print("Here")    
 
         elif "OFF" in self.message:
             '''turn lights off'''
             obj = TTS("Turning lights off!")
             del obj
+            # GPIO.output(3,True)
             
     def fans(self):
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgnd_grad"
-    tools:context=".HistoryActivity">
+    tools:context=".AboutActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_history"
@@ -26,18 +26,19 @@
             android:gravity="left"/>
     </androidx.appcompat.widget.Toolbar>
 
-
-    <ListView
-        android:id="@+id/ListView"
-        android:layout_width="312dp"
-        android:layout_height="526dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="176dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="176dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/semiTransparentBackground"
+        android:text="@string/about_html"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_history">
-
-    </ListView>
-
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_history" />
 </androidx.constraintlayout.widget.ConstraintLayout>
