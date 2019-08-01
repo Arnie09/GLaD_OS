@@ -12,8 +12,6 @@ from youtube import Youtube
 import wikipedia
 import hashlib
 
-
-
 counter = 0
 message_main  = ""
 user_id = ""
@@ -23,6 +21,7 @@ SongPlaying = False
 SongName = ""
 password = ""
 
+'''This is the mqtt client that takes the message from user and processes it'''
 def mqttclient():
 
     global user_id
@@ -48,6 +47,7 @@ def mqttclient():
         global youtube_instance
         global SongPlaying
         print("In play my playlist...")
+        TTS("Playing your playlist...")
         SongPlaying = True
         youtube_instance.play_playlist()
 
@@ -59,6 +59,7 @@ def mqttclient():
     def play_anthem():
 
         print("playing a song...")
+        TTS("Playing a song")
         play_still_alive = threading.Thread(target = function_that_play_still_alive)
         play_still_alive.start()
 
@@ -210,6 +211,8 @@ def mqttclient():
 
     client.loop_forever()
 
+
+'''This client is only called if the script cannot find any userid'''
 def mqttclient_to_get_userid():
 
     def execute():
@@ -230,6 +233,7 @@ def mqttclient_to_get_userid():
 
             print(id)
             user_id = id
+            TTS("New user id received. Welcome,",id)
 
         execute()
 
