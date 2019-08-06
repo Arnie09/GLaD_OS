@@ -28,6 +28,24 @@ def mqttclient():
     global youtube_instance
     global password
 
+    def resetAcc(client):
+        with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
+            data = {"email":"","password":""}
+            passfile.seek(0)
+            json.dump(data,passfile)
+            passfile.truncate()
+        with open(os.path.join(sys.path[0],"assets/user_id.json"),'r+') as user_id_file:
+            data = {"username":""}
+            user_id_file.seek(0)
+            json.dump(data,user_id_file)
+            user_id_file.truncate()
+
+        print("I have reset myself master!")
+
+        #TTS("I have reset myself master!")
+        client.disconnect
+        sys.exit()
+
     def wikipedia_search(message):
         global SongPlaying
         global youtube_instance
@@ -163,6 +181,10 @@ def mqttclient():
             elif("Password" in message):
                 client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
 
+            if(message == "RESET ACCOUNT"):
+                print("resetting account")
+                resetAcc(client)
+
             message = message.upper()
             print("Bot.py mqtt client:",message)
             '''here we list all the choices'''
@@ -190,8 +212,6 @@ def mqttclient():
             elif("TELL ME ABOUT" in message):
                 print("Search from wikipedia...")
                 wikipedia_search(message)
-            
-            
 
             elif("CALLING ALPHABASE" in message):
                 initialinteraction(client)

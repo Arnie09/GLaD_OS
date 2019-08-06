@@ -15,7 +15,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.text.Html;
@@ -30,7 +29,6 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -41,6 +39,7 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -51,7 +50,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -60,11 +58,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -206,7 +199,7 @@ public class MainActivity extends AppCompatActivity
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, int which) {
                         final String m_Text = input.getText().toString();
                         Log.i("User", m_Text);
                         user_id = m_Text;
@@ -219,40 +212,20 @@ public class MainActivity extends AppCompatActivity
                                             Log.w("MainActivity", "Listen failed.", e);
                                             return;
                                         }
-
-
                                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                            String name = document.get("name").toString();
-                                            if (name.equals(m_Text)) {
+                                            String name = document.getId();
+                                            if (name.equalsIgnoreCase(m_Text)) {
                                                 error = 1;
                                                 Toast.makeText(MainActivity.this, "Name aldready taken try something else", Toast.LENGTH_SHORT).show();
                                                 break;
                                             }
                                         }
                                         if (error == 0) {
-
-                                            db.collection("no_of_user").document("Number")
-                                                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@androidx.annotation.NonNull Task<DocumentSnapshot> task) {
-                                                    if (task.isSuccessful()) {
-                                                        DocumentSnapshot documentSnapshot = task.getResult();
-                                                        no_users = Integer.parseInt(documentSnapshot.get("total_users").toString());
-                                                        Log.i("Number of users: ",String.valueOf(no_users));
-                                                        no_users = no_users+1;
-                                                        Log.i("Users:",String.valueOf(no_users));
-                                                        Map<String,Integer> no = new HashMap<>();
-                                                        no.put("total_users",no_users);
-                                                        Map<String,String> name = new HashMap<>();
-                                                        name.put("name",m_Text);
-                                                        db.collection("no_of_user").document("Number").set(no);
-                                                        db.collection("userids").document(String.valueOf(no_users)).set(name);
-                                                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("userid", m_Text).apply();
-                                                        sendMessageMQTT(m_Text,"GladOs/userid");
-                                                    }
-                                                }
-                                            });
-
+                                            Map<String,Boolean> entry =  new HashMap<>();
+                                            entry.put("exists",true);
+                                            db.collection("userids").document(m_Text).set(entry);
+                                            sendMessageMQTT(m_Text,"GladOs/userid");
+                                            dialog.cancel();
                                         }
                                     }
                                 });
@@ -348,6 +321,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 sendMessageMQTT("Password:" + email + "," + password, "GladOs/messages/" + user_id);
                 Toast.makeText(this, "Please wait while Glados cooks up the magic!", Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.VISIBLE);
             }
         } else if (s.equals("Everything OK")){
             parent_layout.setVisibility(View.VISIBLE);
@@ -444,9 +418,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void messageArrived(String topic, MqttMessage message) throws Exception {
                             Log.i("GLADOS",new String(message.getPayload()));
-
                             parseMqttMessage(new String(message.getPayload()));
-
                         }
 
                         @Override
@@ -460,6 +432,19 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             return true;
+        }
+        else if(id == R.id.action_reset_app){
+            sendMessageMQTT("RESET ACCOUNT","GladOs/messages/" + user_id);
+            db.collection("userids").document(user_id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(MainActivity.this, "User account deleted!", Toast.LENGTH_SHORT).show();
+                }
+            });
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("email","defaultStringIfNothingFound").apply();
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("password","defaultStringIfNothingFound").apply();
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("userid","defaultStringIfNothingFound").apply();
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
