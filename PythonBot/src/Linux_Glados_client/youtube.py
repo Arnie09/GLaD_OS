@@ -17,8 +17,8 @@ class Youtube():
         self.CHROMESTAT=0
         self.VIDEOSTAT=-1
         self.length = 0
-        #self.browser = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver') #For raspberry pi only!
-        self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
+        self.browser = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver') #For raspberry pi only!
+        #self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
         self.browser.get("https://www.google.com")
         self.browser.find_element_by_css_selector('#gb_70').click()
         self.browser.find_element_by_name('identifier').send_keys(email)
