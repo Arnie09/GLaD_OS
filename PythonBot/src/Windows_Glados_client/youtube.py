@@ -33,8 +33,29 @@ class Youtube():
         self.browser.find_element_by_xpath('//*[@id="passwordNext"]/span/span').click()
         sleep(2)
 
-        #self.playsong()
+        self.browser.get("https://www.youtube.com")
+        self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
+        sleep(1)
+        a=self.browser.find_elements_by_id('endpoint')
+        self.browser.get(a[10].get_attribute("href"))
+        sleep(2)
+        songs = self.browser.find_elements_by_id("video-title")
+        
+        playlist_songs=[]
+        for i in songs:
+            playlist_songs.append(i.text)
+        self.add_songs_to_json(playlist_songs)
 
+
+        #self.playsong()
+    
+    def add_songs_to_json(self,playlist_songs):
+
+        with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+') as playliistfile:
+            data = {"songs":playlist_songs}
+            playliistfile.seek(0)
+            json.dump(data,playliistfile)
+            playliistfile.truncate()
 
     def playsong(self,message):
         #obj = TTS("Playing "+self.song)
@@ -121,10 +142,4 @@ class Youtube():
         return True
 
 
-# obj = Youtube()
-# obj.play_playlist()
 
-# sleep(5)
-# obj.instructions("REMOVE FROM PLAYLIST")
-# sleep(5)
-# print("Hi")
