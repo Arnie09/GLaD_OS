@@ -434,17 +434,22 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         else if(id == R.id.action_reset_app){
-            sendMessageMQTT("RESET ACCOUNT","GladOs/messages/" + user_id);
-            db.collection("userids").document(user_id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Toast.makeText(MainActivity.this, "User account deleted!", Toast.LENGTH_SHORT).show();
-                }
-            });
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("email","defaultStringIfNothingFound").apply();
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("password","defaultStringIfNothingFound").apply();
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("userid","defaultStringIfNothingFound").apply();
-            finish();
+            if (user_id.equalsIgnoreCase("")){
+                Toast.makeText(this, "Please log in before trying to sign out!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                sendMessageMQTT("RESET ACCOUNT", "GladOs/messages/" + user_id);
+                db.collection("userids").document(user_id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MainActivity.this, "User account deleted!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("email", "defaultStringIfNothingFound").apply();
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("password", "defaultStringIfNothingFound").apply();
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("userid", "defaultStringIfNothingFound").apply();
+                finish();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

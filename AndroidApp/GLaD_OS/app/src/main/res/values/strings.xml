@@ -18,7 +18,7 @@
     <string name="menu_history">History</string>
     <string name="action_exit">Exit</string>
     <string name="action_connect">Connect</string>
-    <string name="action_reset_app">Reset app</string>
+    <string name="action_reset_app">Logout</string>
     <string name="about_html"><![CDATA[
     <h2>GLADOS Your very own personal assistant!</h2>
     <br>
