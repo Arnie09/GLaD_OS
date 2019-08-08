@@ -20,6 +20,7 @@ youtube_instance = None
 SongPlaying = False
 SongName = ""
 password = ""
+active = True
 
 '''This is the mqtt client that takes the message from user and processes it'''
 def mqttclient():
@@ -29,6 +30,8 @@ def mqttclient():
     global password
 
     def resetAcc(client):
+        global active
+
         with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
             data = {"email":"","password":""}
             passfile.seek(0)
@@ -43,7 +46,8 @@ def mqttclient():
         print("I have reset myself master!")
 
         #TTS("I have reset myself master!")
-        client.disconnect
+        client.disconnect()
+        active = False
         sys.exit()
 
     def wikipedia_search(message):
@@ -235,11 +239,14 @@ def mqttclient():
 '''This client is only called if the script cannot find any userid'''
 def mqttclient_to_get_userid():
 
-    def execute():
+    def on_disconnect(client, userdata,rc=0):
+        client.loop_stop()
+
+    def execute(client):
         global mqtt_thred_to_get_userid
         print("onexecute")
-        client.disconnect
-        mqtt_thred_to_get_userid.exit()
+        client.disconnect()
+        # mqtt_thred_to_get_userid.exit()
 
     def on_connect(client,userdata,flags,rc):
 
@@ -251,16 +258,17 @@ def mqttclient_to_get_userid():
         if  "GladOs/userid" in mssg.topic :
             id = str(mssg.payload)[2:-1]
 
-            print(id)
+            print("In mqttclient to get userid",id)
             user_id = id
             TTS("New user id received. Welcome,",id)
 
-        execute()
+        execute(client)
 
     client = mqtt.Client()
 
     client.on_connect = on_connect
     client.on_message = on_message
+    client.on_disconnect = on_disconnect
 
     client.connect("broker.hivemq.com",1883,60)
 
@@ -278,6 +286,7 @@ with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
     print(user_id)
     if(user_id == ""):
         mqtt_thred_to_get_userid = threading.Thread(target = mqttclient_to_get_userid)
+        mqtt_thred_to_get_userid.daemon = True
         mqtt_thred_to_get_userid.start()
 
 '''this loop checks whether the username had been passed or not.'''
@@ -293,4 +302,10 @@ while(True):
 
 '''calling the main message thread from here'''
 mqtt_thred = threading.Thread(target = mqttclient)
+mqtt_thred.daemon = True
 mqtt_thred.start()
+
+while(True):
+    if active == False:
+        print("Exiting main thread")
+        sys.exit()
