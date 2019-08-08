@@ -12,6 +12,7 @@ from youtube import Youtube
 import wikipedia
 import hashlib
 
+# declaration of global variables
 counter = 0
 message_main  = ""
 user_id = ""
@@ -29,6 +30,7 @@ def mqttclient():
     global youtube_instance
     global password
 
+    '''function to reset acccount'''
     def resetAcc(client):
         global active
 
@@ -44,12 +46,12 @@ def mqttclient():
             user_id_file.truncate()
 
         print("I have reset myself master!")
-
-        #TTS("I have reset myself master!")
+        TTS("I have reset myself master!")
         client.disconnect()
         active = False
         sys.exit()
 
+    '''function to search wikipedia for information'''
     def wikipedia_search(message):
         global SongPlaying
         global youtube_instance
@@ -64,6 +66,7 @@ def mqttclient():
         else:
             TTS(summary)
 
+    '''function to play playlist'''
     def play_my_playlist():
 
         global youtube_instance
@@ -73,18 +76,22 @@ def mqttclient():
         SongPlaying = True
         youtube_instance.play_playlist()
 
+    '''Initiates the iot funtion'''
     def iotControl_subroutine(message):
 
         iotControl_obj =iotControl(message)
         del iotControl_obj
 
+    '''starts playing still alive'''
     def play_anthem():
 
         print("playing a song...")
         TTS("Playing a song")
         play_still_alive = threading.Thread(target = function_that_play_still_alive)
+        play_still_alive.daemon = True
         play_still_alive.start()
 
+    '''threading function that plays still alive'''
     def function_that_play_still_alive():
 
         pygame.mixer.init()
@@ -125,6 +132,7 @@ def mqttclient():
         if(df_obj.response):
             TTS(df_obj.response)
 
+    '''this sets the password of the client using any google acccount'''
     def setpassword(message,client):
         global youtube_instance
         global password
@@ -246,7 +254,6 @@ def mqttclient_to_get_userid():
         global mqtt_thred_to_get_userid
         print("onexecute")
         client.disconnect()
-        # mqtt_thred_to_get_userid.exit()
 
     def on_connect(client,userdata,flags,rc):
 
