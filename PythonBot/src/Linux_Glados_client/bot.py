@@ -45,7 +45,7 @@ def mqttclient():
 
         print("I have reset myself master!")
 
-        #TTS("I have reset myself master!")
+        TTS("I have reset myself master!")
         client.disconnect()
         active = False
         sys.exit()
@@ -83,6 +83,7 @@ def mqttclient():
         print("playing a song...")
         TTS("Playing a song")
         play_still_alive = threading.Thread(target = function_that_play_still_alive)
+        play_still_alive.daemon = True
         play_still_alive.start()
 
     def function_that_play_still_alive():

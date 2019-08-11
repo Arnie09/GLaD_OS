@@ -225,6 +225,7 @@ public class MainActivity extends AppCompatActivity
                                             entry.put("exists",true);
                                             db.collection("userids").document(m_Text).set(entry);
                                             sendMessageMQTT(m_Text,"GladOs/userid");
+                                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("userid",m_Text).apply();
                                             dialog.cancel();
                                         }
                                     }
