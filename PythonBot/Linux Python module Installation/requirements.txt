@@ -4,4 +4,5 @@ google-auth==1.6.3
 googleapis-common-protos==1.6.0
 dialogflow==0.6.0
 gTTS==2.0.3
-playsound==1.2.2
+pygame==1.9.6
+selenium==3.141.0
