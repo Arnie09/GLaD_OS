@@ -24,7 +24,7 @@ GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steamp
 * **Glados can maintain its own playlist with options to add/remove more songs**
 * **Glados can talk to you if you feel lonely.** (Get some friends noob)
 * **Glados can fetch you information directly from wikipedia.
-* **If you say** Glados play despacito **,Glados will play despacito.
+* **If you say** Glados play despacito **,Glados will play despacito.**
 * **Glados doesn't kill you although she can be mean at times**
 
 ### Getting-Started
@@ -70,7 +70,7 @@ The steps to get the software installed on a raspberry pi are as follows:
 * Enter unique username at the screen below:
    ![enter unique userid](https://github.com/Arnie09/GLaD_OS/blob/master/images/App1.jpeg)
 * Click the connect button
-   ![Click the connect button)(https://github.com/Arnie09/GLaD_OS/blob/master/images/App4.jpeg)
+   ![Click the connect button](https://github.com/Arnie09/GLaD_OS/blob/master/images/App4.jpeg)
 * Enter the email and password of the google account you created for glados.
    ![Enter email and password](https://github.com/Arnie09/GLaD_OS/blob/master/images/App3.jpeg)
 * Wait for glados to log in and set up everything you will receive an audio cue when she is done.
