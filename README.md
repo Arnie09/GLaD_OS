@@ -7,10 +7,25 @@ GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steamp
 
 ## Table of contents
 
-1. [Getting Started](#Getting-Started)
-2. [Prerequisites](#Prerequisites)
-3. [Installing](#Installing)
-4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+1. [What does Glados do?](#What-does-glados-do)
+2. [Getting Started](#Getting-Started)
+3. [Prerequisites](#Prerequisites)
+4. [Installing](#Installing)
+5. [How Glados works](#How-Glados-works)
+6. [Creator's-note](#Creator's-note)
+7. [Techstack-used](#Techstack-used)
+8. [Team](#Team)
+
+### What-does-glados-do
+
+* **Glados controls the main electrical appliances at your home.** 
+  (Currently it can work only at your commands but on future updates automated updates and reminders to switch off stuff can be implemented.) If the number of controlled appliances is large, ML algorithms to optimise electric bill can also be implemented easily over the existing model of the application.
+* **Glados can play your songs at voice commands**
+* **Glados can maintain its own playlist with options to add/remove more songs**
+* **Glados can talk to you if you feel lonely.** (Get some friends noob)
+* **Glados can fetch you information directly from wikipedia.
+* **If you say** Glados play despacito **,Glados will play despacito.
+* **Glados doesn't kill you although she can be mean at times**
 
 ### Getting-Started
 
@@ -42,13 +57,78 @@ Now coming to the software:
 
 The steps to get the software installed on a raspberry pi are as follows:
 
-* Download/Clone this repository and copy the folder Linux_Glados_client or Raspberry_pi_Glados_bot depending on your platform
+* Download/Clone this repository and copy the folder Raspberry_pi_Glados_bot 
   The folder can be found in PythonBot/src/. Paste the folder in a location where you would want to store the software.
 * Download andd install the application on your mobile phone. Donot open it yet.
-* Run the bash script to install all necessary python modules required by the python script. **This step may take a lot of time           especially in case of a raspberry pi** But donot worry let the installation finish.
+* The steps to install the Chromedriver can be found [here](https://github.com/Arnie09/GLaD_OS/blob/master/PythonBot/src/Raspberry_Pi_Glados_client/Chromedriver_Rasp/installation.md) 
+* Run the bash script to install all necessary python modules required by the python script. **This step may take a lot of time especially in case of a raspberry pi** But donot worry let the installation finish.
 * Next copy paste the boot menu file into the boot folder so that the program auto starts after booting in araspberry pi.
 * after making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
-  **bot.py**. Open the android app as well. 
+  **bot.py**. Open the android app as well.
+  
+###### Setup-of-the-app
 * Enter unique username at the screen below:
    ![enter unique userid](https://github.com/Arnie09/GLaD_OS/blob/master/images/App1.jpeg)
+* Click the connect button
+   ![Click the connect button)(https://github.com/Arnie09/GLaD_OS/blob/master/images/App4.jpeg)
+* Enter the email and password of the google account you created for glados.
+   ![Enter email and password](https://github.com/Arnie09/GLaD_OS/blob/master/images/App3.jpeg)
+* Wait for glados to log in and set up everything you will receive an audio cue when she is done.
+   ![Wait for the setup](https://github.com/Arnie09/GLaD_OS/blob/master/images/App2.jpeg)
+* Enjoy!
+   ![Enjoy](https://github.com/Arnie09/GLaD_OS/blob/master/images/App5.jpeg)
    
+##### **On Linux**
+
+* Download/Clone this repository and copy the folder Linux_Glados_client 
+  The folder can be found in PythonBot/src/. Paste the folder in a location where you would want to store the software.
+* Download andd install the application on your mobile phone. Donot open it yet.
+* The steps to install the Chromedriver can be found [here](https://github.com/Arnie09/GLaD_OS/blob/master/PythonBot/src/Raspberry_Pi_Glados_client/Chromedriver_Rasp/installation.md) 
+* Run the bash script to install all necessary python modules required by the python script.
+* after making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
+  **bot.py**. Open the android app as well.
+* Set up of the app is the same as [this](#Setup-of-the-app)
+
+##### **On Windows**
+
+* Download/Clone this repository and copy the folder Windows_Glados_client 
+  The folder can be found in PythonBot/src/. Paste the folder in a location where you would want to store the software.
+* Download andd install the application on your mobile phone. Donot open it yet.
+* Chromedriver is aldready suplied no need to install it saperately!
+* Run the batch script to install all necessary python modules required by the python script.
+* after making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
+  **bot.py**. Open the android app as well.
+* Set up of the app is the same as [this](#Setup-of-the-app)
+
+### How-Glados-works
+
+A breif overview of working of glados has been depicted in the picture below.
+![layout](https://github.com/Arnie09/GLaD_OS/blob/master/images/layout.jpg)
+
+### Creator's-note
+
+* In case of any problems or issues that you may have faced, feel free to contact any of the developers.
+* As the app is in development there will be bugs so please raise issues if and when you find them.
+* You can add more modules to the app just issue the pull request and we will review the request.
+
+### Techstack-used
+
+* Python3.7
+* Paho Mqtt Client
+* Native Andoid - Java
+* Dialogflow
+
+The python module list has been included.
+The software was tested on Raspberry pi 3B+ running raspbian, Linux(Elementry OS), Windows 10.
+
+### Team
+
+This project was created out of curiosity to learn new tech stack by:
+* **Arnab Chanda** 
+   [LinkedIn](https://www.linkedin.com/in/arnab-chanda-aa671017a/)
+   [Github](https://github.com/Arnie09)
+* **Sandeep Singh**
+   [LinkedIn](https://www.linkedin.com/in/sandeep-singh-850157184/)
+   [Github](https://github.com/sandeep1103)
+* **Somdutta Roy**
+   [LinkedIn](https://www.linkedin.com/in/somdutta-roy-396329178/)
