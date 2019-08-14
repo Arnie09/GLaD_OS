@@ -12,42 +12,46 @@ from selenium.webdriver.common.keys import Keys
 
 class Youtube():
 
-    def __init__(self,email,password):
+    def __init__(self):
         self.song = ""
         self.CHROMESTAT=0
         self.VIDEOSTAT=-1
         self.length = 0
-        self.browser = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver') #For raspberry pi only!
+        self.browser = webdriver.Chrome(executable_path = '/usr/bin/chromedriver') #For raspberry pi only!
         #self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
+        self.loginstate = 0
+
+    def login(self,email,password):
+        
+        print("Login function!")
         self.browser.get("https://www.google.com")
+        
         self.browser.find_element_by_css_selector('#gb_70').click()
         self.browser.find_element_by_name('identifier').send_keys(email)
         self.browser.find_element_by_xpath('//*[@id="identifierNext"]/span').click()
         sleep(1)
-        while(1):
-            try:
-                self.browser.find_element_by_name('password').send_keys(password)
-                break;
-            except:
-                continue;
+        self.browser.find_element_by_name('password').send_keys(password)
         self.browser.find_element_by_xpath('//*[@id="passwordNext"]/span/span').click()
         sleep(2)
-
-        self.browser.get("https://www.youtube.com")
-        self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
-        sleep(1)
-        a=self.browser.find_elements_by_id('endpoint')
-        self.browser.get(a[10].get_attribute("href"))
-        sleep(2)
-        songs = self.browser.find_elements_by_id("video-title")
+        if(self.browser.current_url == "https://www.google.com/"):
+            self.browser.get("https://www.youtube.com")
+            self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
+            sleep(1)
+            a=self.browser.find_elements_by_id('endpoint')
+            self.browser.get(a[10].get_attribute("href"))
+            sleep(2)
+            songs = self.browser.find_elements_by_id("video-title")
+            playlist_songs=[]
+            for i in songs:
+                playlist_songs.append(i.text)
+            self.add_songs_to_json(playlist_songs)
+            self.loginstate = 1
+        else:
+            self.loginstate = 0
         
-        playlist_songs=[]
-        for i in songs:
-            playlist_songs.append(i.text)
-        self.add_songs_to_json(playlist_songs)
 
-
-        #self.playsong()
+        
+        
     
     def add_songs_to_json(self,playlist_songs):
 
@@ -140,5 +144,6 @@ class Youtube():
             next = self.browser.find_element_by_css_selector('#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > a.ytp-next-button.ytp-button').click()
 
         return True
+
 
 

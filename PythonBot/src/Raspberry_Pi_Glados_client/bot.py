@@ -45,7 +45,7 @@ def mqttclient():
 
         print("I have reset myself master!")
 
-        #TTS("I have reset myself master!")
+        TTS("I have reset myself master!")
         client.disconnect()
         active = False
         sys.exit()
@@ -83,6 +83,7 @@ def mqttclient():
         print("playing a song...")
         TTS("Playing a song")
         play_still_alive = threading.Thread(target = function_that_play_still_alive)
+        play_still_alive.daemon = True
         play_still_alive.start()
 
     def function_that_play_still_alive():
@@ -131,35 +132,20 @@ def mqttclient():
         global user_id
         print("In set password")
 
-        with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
-            data = json.load(passfile)
-            email = data["email"]
-            passs = data["password"]
-            credentials = message[9:]
-            username,password_ = credentials.split(",")
-            print(username)
-            print(password_)
-            if passs == "":
-                print("Here")
-                hashpass = hashlib.sha256(str.encode(password_)).hexdigest()
-                print(hashpass)
-                data = {"email":username,"password":hashpass}
-                passfile.seek(0)
-                json.dump(data,passfile)
-                passfile.truncate()
-                youtube_instance = Youtube(username,password_)
-                password = password_
-                client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
-                TTS("I am ready to take your commands master!")
-            else:
+        credentials = message[9:]
+        username,password_ = credentials.split(",")
+        print(username)
+        print(password_)
 
-                if(hashlib.sha256(str.encode(password_)).hexdigest() == passs):
-                    print("Here")
-                    youtube_instance = Youtube(username,password_)
-                    client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
-                    TTS("I am ready to take your commands master!")
-                else:
-                    client.publish("GladOs/messages/raspberry2phone"+user_id,"Wrong password enter again!")
+        youtube_instance.login(username,password_)
+        
+        if(youtube_instance.loginstate == 1):
+            password = password_
+            client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
+            TTS("I am ready to take your commands master!")
+        else:
+            client.publish("GladOs/messages/raspberry2phone"+user_id,"Wrong password enter again!")
+            TTS("Something is wrong. Please try again. Make sure you are entering the correct password and email.")
 
     def initialinteraction(client):
         if password == "":
@@ -179,7 +165,7 @@ def mqttclient():
         if  "GladOs/messages" in mssg.topic :
             message = str(mssg.payload)[2:-1]
 
-            if("Password" in message and youtube_instance == None):
+            if("Password" in message):
                 print("Calling password")
                 setpassword(message,client)
             elif("Password" in message):
@@ -299,7 +285,7 @@ while(True):
             json.dump(data,user_id_file)
             user_id_file.truncate()
         break
-
+youtube_instance = Youtube()
 '''calling the main message thread from here'''
 mqtt_thred = threading.Thread(target = mqttclient)
 mqtt_thred.daemon = True
