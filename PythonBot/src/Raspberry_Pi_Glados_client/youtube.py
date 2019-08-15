@@ -75,6 +75,11 @@ class Youtube():
         except:
             self.browser.find_element_by_xpath("//*[@id='rso']/div/div/div[1]/div/div/div[1]/a/h3").click()
 
+    def play_anthem(self):
+        self.browser.get("https://www.youtube.com/watch?v=qF9vdZAYj3I")
+        self.VIDEOSTAT = 1
+
+
     def play_playlist(self):
         self.browser.get('https://www.youtube.com/')
         self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()

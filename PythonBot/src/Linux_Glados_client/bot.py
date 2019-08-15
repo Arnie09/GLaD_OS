@@ -80,18 +80,12 @@ def mqttclient():
 
     def play_anthem():
 
+        global SongPlaying
         print("playing a song...")
         TTS("Playing a song")
-        play_still_alive = threading.Thread(target = function_that_play_still_alive)
-        play_still_alive.daemon = True
-        play_still_alive.start()
-
-    def function_that_play_still_alive():
-
-        pygame.mixer.init()
-        song = pygame.mixer.Sound(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.wav"))
-        print(type(song))
-        pygame.mixer.Channel(2).play(song)
+        SongPlaying = True
+        youtube_instance.play_anthem()
+        
 
     def send_instructions_to_youtube(message):
 
