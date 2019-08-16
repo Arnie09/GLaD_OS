@@ -38,13 +38,10 @@ import android.widget.Toast;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -97,6 +94,8 @@ public class MainActivity extends AppCompatActivity
     Switch lights;
     Switch fans;
     ProgressBar progressBar;
+    String entered_email;
+    String entered_password;
 
 
     @Override
@@ -302,10 +301,8 @@ public class MainActivity extends AppCompatActivity
                                 // sign in the user ...
                                 EditText input_email = (EditText) ((AlertDialog) dialog).findViewById(R.id.Email);
                                 EditText input_password = (EditText) ((AlertDialog) dialog).findViewById(R.id.Password);
-                                String entered_email = input_email.getText().toString();
-                                String entered_password = input_password.getText().toString();
-                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email", entered_email).apply();
-                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password", entered_password).apply();
+                                entered_email = input_email.getText().toString();
+                                entered_password = input_password.getText().toString();
                                 sendMessageMQTT("Password:" + entered_email + "," + entered_password, "GladOs/messages/" + user_id);
                                 progressBar.setVisibility(View.VISIBLE);
 
@@ -325,6 +322,10 @@ public class MainActivity extends AppCompatActivity
                 progressBar.setVisibility(View.VISIBLE);
             }
         } else if (s.equals("Everything OK")){
+            if(email.equals("defaultStringIfNothingFound")) {
+                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("email", entered_email).apply();
+                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("password", entered_password).apply();
+            }
             parent_layout.setVisibility(View.VISIBLE);
             fab.show();
             progressBar.setVisibility(View.INVISIBLE);
