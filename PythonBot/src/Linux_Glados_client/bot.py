@@ -32,11 +32,6 @@ def mqttclient():
     def resetAcc(client):
         global active
 
-        with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
-            data = {"email":"","password":""}
-            passfile.seek(0)
-            json.dump(data,passfile)
-            passfile.truncate()
         with open(os.path.join(sys.path[0],"assets/user_id.json"),'r+') as user_id_file:
             data = {"username":""}
             user_id_file.seek(0)
@@ -49,6 +44,7 @@ def mqttclient():
         client.disconnect()
         active = False
         sys.exit()
+        
 
     def wikipedia_search(message):
         global SongPlaying
@@ -142,9 +138,10 @@ def mqttclient():
             TTS("Something is wrong. Please try again. Make sure you are entering the correct password and email.")
 
     def initialinteraction(client):
+        global youtube_instance
         if password == "":
             client.publish("GladOs/messages/raspberry2phone"+user_id,"Enter the password")
-        else:
+        elif youtube_instance.loginstate == 1:
             client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
 
     def on_message(client,userdata,mssg):
