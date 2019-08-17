@@ -38,12 +38,16 @@ class Youtube():
             self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
             sleep(1)
             a=self.browser.find_elements_by_id('endpoint')
-            self.browser.get(a[6].get_attribute("href"))
+            for elements in a:
+                if elements.get_attribute("title") == "my_playlist":
+                    self.browser.get(elements.get_attribute("href"))
+                    break
             sleep(2)
             songs = self.browser.find_elements_by_id("video-title")
             playlist_songs=[]
             for i in songs:
                 playlist_songs.append(i.text)
+                print(i.text)
             self.add_songs_to_json(playlist_songs)
             self.loginstate = 1
         else:
@@ -63,6 +67,7 @@ class Youtube():
 
     def playsong(self,message):
         TTS("Playing "+self.song)
+        
         self.browser.get("https://www.google.com")
         self.song = message
         search = self.browser.find_element_by_name('q')
@@ -78,15 +83,15 @@ class Youtube():
         self.browser.get("https://www.youtube.com/watch?v=qF9vdZAYj3I")
         self.VIDEOSTAT = 1
 
-
     def play_playlist(self):
         self.browser.get('https://www.youtube.com/')
         self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
         sleep(1)
         a=self.browser.find_elements_by_id('endpoint')
-        for i in a:
-            print(i.get_attribute("href"))
-        self.browser.get(a[10].get_attribute("href"))
+        for elements in a:
+                if elements.get_attribute("title") == "my_playlist":
+                    self.browser.get(elements.get_attribute("href"))
+                    break
         self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer/yt-formatted-string').click()
 
         self.VIDEOSTAT = 1

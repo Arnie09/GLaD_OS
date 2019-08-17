@@ -17,7 +17,7 @@ class Youtube():
         self.CHROMESTAT=0
         self.VIDEOSTAT=-1
         self.length = 0
-        #self.browser = webdriver.Chrome(executable_path = '/usr/bin/chromedriver') #For raspberry pi only!
+        # self.browser = webdriver.Chrome(executable_path = '/usr/bin/chromedriver') #For raspberry pi only!
         self.browser=webdriver.Chrome(executable_path=os.path.join(sys.path[0],'chromedriver.exe'))
         self.loginstate = 0
 
@@ -38,12 +38,16 @@ class Youtube():
             self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
             sleep(1)
             a=self.browser.find_elements_by_id('endpoint')
-            self.browser.get(a[10].get_attribute("href"))
+            for elements in a:
+                if elements.get_attribute("title") == "my_playlist":
+                    self.browser.get(elements.get_attribute("href"))
+                    break
             sleep(2)
             songs = self.browser.find_elements_by_id("video-title")
             playlist_songs=[]
             for i in songs:
                 playlist_songs.append(i.text)
+                print(i.text)
             self.add_songs_to_json(playlist_songs)
             self.loginstate = 1
         else:
@@ -62,9 +66,9 @@ class Youtube():
             playliistfile.truncate()
 
     def playsong(self,message):
-        #obj = TTS("Playing "+self.song)
-        if self.VIDEOSTAT!=-1:
-            self.browser.get("https://www.google.com")
+        # TTS("Playing "+self.song)
+        
+        self.browser.get("https://www.google.com")
         self.song = message
         search = self.browser.find_element_by_name('q')
         search.send_keys(self.song+" Youtube")
@@ -84,9 +88,10 @@ class Youtube():
         self.browser.find_element_by_xpath('//*[@id="guide-icon"]').click()
         sleep(1)
         a=self.browser.find_elements_by_id('endpoint')
-        for i in a:
-            print(i.get_attribute("href"))
-        self.browser.get(a[10].get_attribute("href"))
+        for elements in a:
+                if elements.get_attribute("title") == "my_playlist":
+                    self.browser.get(elements.get_attribute("href"))
+                    break
         self.browser.find_element_by_xpath('//*[@id="overlays"]/ytd-thumbnail-overlay-side-panel-renderer/yt-formatted-string').click()
 
         self.VIDEOSTAT = 1

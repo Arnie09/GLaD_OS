@@ -32,23 +32,23 @@ def mqttclient():
     def resetAcc(client):
         global active
 
-        with open(os.path.join(sys.path[0],"assets/ussername_pass.json"),'r+') as passfile:
-            data = {"email":"","password":""}
-            passfile.seek(0)
-            json.dump(data,passfile)
-            passfile.truncate()
         with open(os.path.join(sys.path[0],"assets/user_id.json"),'r+') as user_id_file:
             data = {"username":""}
             user_id_file.seek(0)
             json.dump(data,user_id_file)
             user_id_file.truncate()
 
-        print("I have reset myself master!")
+        with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+')as playlist_file:
+            data = {"songs":[]}
+            playlist_file.seek(0)
+            json.dump(data,playlist_file)
+            playlist_file.truncate()
 
         TTS("I have reset myself master!")
         client.disconnect()
         active = False
         sys.exit()
+        
 
     def wikipedia_search(message):
         global SongPlaying
@@ -80,18 +80,12 @@ def mqttclient():
 
     def play_anthem():
 
+        global SongPlaying
         print("playing a song...")
         TTS("Playing a song")
-        play_still_alive = threading.Thread(target = function_that_play_still_alive)
-        play_still_alive.daemon = True
-        play_still_alive.start()
-
-    def function_that_play_still_alive():
-
-        pygame.mixer.init()
-        song = pygame.mixer.Sound(os.path.join(sys.path[0],"assets","audio","Portal - Still Alive.wav"))
-        print(type(song))
-        pygame.mixer.Channel(2).play(song)
+        SongPlaying = True
+        youtube_instance.play_anthem()
+        
 
     def send_instructions_to_youtube(message):
 
@@ -118,6 +112,7 @@ def mqttclient():
 
         global user_id
         print("subscribing to: GladOs/messages/"+user_id)
+        # TTS("Please press the connect button now master!")
         client.subscribe("GladOs/messages/"+user_id)
         
 
@@ -148,9 +143,10 @@ def mqttclient():
             TTS("Something is wrong. Please try again. Make sure you are entering the correct password and email.")
 
     def initialinteraction(client):
+        global youtube_instance
         if password == "":
             client.publish("GladOs/messages/raspberry2phone"+user_id,"Enter the password")
-        else:
+        elif youtube_instance.loginstate == 1:
             client.publish("GladOs/messages/raspberry2phone"+user_id,"Everything OK")
 
     def on_message(client,userdata,mssg):
@@ -225,6 +221,9 @@ def mqttclient():
 '''This client is only called if the script cannot find any userid'''
 def mqttclient_to_get_userid():
 
+    def welcome_user(id):
+        TTS("Welcome back "+id)
+
     def on_disconnect(client, userdata,rc=0):
         client.loop_stop()
 
@@ -243,10 +242,9 @@ def mqttclient_to_get_userid():
         global user_id
         if  "GladOs/userid" in mssg.topic :
             id = str(mssg.payload)[2:-1]
-
             print("In mqttclient to get userid",id)
             user_id = id
-            TTS("New user id received. Welcome,",id)
+            welcome_user(id)
 
         execute(client)
 
@@ -274,6 +272,8 @@ with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
         mqtt_thred_to_get_userid = threading.Thread(target = mqttclient_to_get_userid)
         mqtt_thred_to_get_userid.daemon = True
         mqtt_thred_to_get_userid.start()
+    else:
+        TTS("Welcome back "+user_id)
 
 '''this loop checks whether the username had been passed or not.'''
 '''if new username is passed it is written onto disk'''
