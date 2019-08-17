@@ -38,7 +38,11 @@ def mqttclient():
             json.dump(data,user_id_file)
             user_id_file.truncate()
 
-        print("I have reset myself master!")
+        with open(os.path.join(sys.path[0],"assets/my_playlist.json"),'r+')as playlist_file:
+            data = {"songs":[]}
+            playlist_file.seek(0)
+            json.dump(data,playlist_file)
+            playlist_file.truncate()
 
         TTS("I have reset myself master!")
         client.disconnect()
@@ -108,6 +112,7 @@ def mqttclient():
 
         global user_id
         print("subscribing to: GladOs/messages/"+user_id)
+        # TTS("Please press the connect button now master!")
         client.subscribe("GladOs/messages/"+user_id)
         
 
@@ -216,6 +221,9 @@ def mqttclient():
 '''This client is only called if the script cannot find any userid'''
 def mqttclient_to_get_userid():
 
+    def welcome_user(id):
+        TTS("Welcome back "+id)
+
     def on_disconnect(client, userdata,rc=0):
         client.loop_stop()
 
@@ -234,10 +242,9 @@ def mqttclient_to_get_userid():
         global user_id
         if  "GladOs/userid" in mssg.topic :
             id = str(mssg.payload)[2:-1]
-
             print("In mqttclient to get userid",id)
             user_id = id
-            TTS("New user id received. Welcome,",id)
+            welcome_user(id)
 
         execute(client)
 
@@ -265,6 +272,8 @@ with open(os.path.join(sys.path[0],"assets/user_id.json")) as user_id_file:
         mqtt_thred_to_get_userid = threading.Thread(target = mqttclient_to_get_userid)
         mqtt_thred_to_get_userid.daemon = True
         mqtt_thred_to_get_userid.start()
+    else:
+        TTS("Welcome back "+user_id)
 
 '''this loop checks whether the username had been passed or not.'''
 '''if new username is passed it is written onto disk'''
