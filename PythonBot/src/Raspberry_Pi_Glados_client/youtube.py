@@ -46,8 +46,7 @@ class Youtube():
             songs = self.browser.find_elements_by_id("video-title")
             playlist_songs=[]
             for i in songs:
-                playlist_songs.append(i.text)
-                print(i.text)
+                playlist_songs.append(i.get_attribute('title'))
             self.add_songs_to_json(playlist_songs)
             self.loginstate = 1
         else:
