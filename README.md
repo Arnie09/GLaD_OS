@@ -64,8 +64,8 @@ The steps to get the software installed on a raspberry pi are as follows:
 * Download andd install the application on your mobile phone. Donot open it yet.
 * The steps to install the Chromedriver can be found [here](https://github.com/Arnie09/GLaD_OS/blob/master/PythonBot/src/Raspberry_Pi_Glados_client/Chromedriver_Rasp/installation.md) 
 * Run the bash script to install all necessary python modules required by the python script. **This step may take a lot of time especially in case of a raspberry pi** But donot worry let the installation finish.
-* Next copy paste the boot menu file into the boot folder so that the program auto starts after booting in araspberry pi.
-* after making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
+* Next copy paste the boot menu file into the boot folder so that the program auto starts after booting in raspberry pi.
+* After making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
   **bot.py**. Open the android app as well.
   
 ###### Setup-of-the-app
