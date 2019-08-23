@@ -9,6 +9,8 @@ GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steamp
 
 **Android App Link** : [Glados](https://drive.google.com/file/d/1jObCxR3bFt-ClH5SYRpttJHcYlUBgH-j/view?usp=sharing)
 
+**NOTE** : This application will not work without a valid Google Cloud Platform service account. So in case you want to run this application yourself please leave a mail at arnabchanda964@gmail.com to get the service account credentials.
+
 ## Table of contents
 
 1. [What does Glados do?](#What-does-glados-do)
