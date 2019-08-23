@@ -3,7 +3,11 @@
 A handy personal assistant who talks sharp and turns on your lights and fans and plays you music if you feel lonely.
 GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steampowered.com/app/400/Portal/). But unlike GLaD_OS in the game, this glados will be help you,willingly or unwillingly that is not assured.
 
-**Platform** : Raspberry Pi(all functions), Linux(no IOT), Windows(no IOT).
+**Working Demo video:** [https://www.youtube.com/watch?v=hbyxTZWnGm4&t=65s](https://www.youtube.com/watch?v=hbyxTZWnGm4&t=65s)
+
+**Platform** : Raspberry Pi(all functions), Linux(no IOT), Windows(no IOT), Windows(IOT with Arduino)
+
+**Android App Link** : [Glados](https://drive.google.com/file/d/1jObCxR3bFt-ClH5SYRpttJHcYlUBgH-j/view?usp=sharing)
 
 ## Table of contents
 
@@ -23,7 +27,7 @@ GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steamp
 * **Glados can play your songs at voice commands**
 * **Glados can maintain its own playlist with options to add/remove more songs**
 * **Glados can talk to you if you feel lonely.** (Get some friends noob)
-* **Glados can fetch you information directly from wikipedia.
+* **Glados can fetch you information directly from wikipedia.**
 * **If you say** Glados play despacito **,Glados will play despacito.**
 * **Glados doesn't kill you although she can be mean at times**
 
@@ -62,8 +66,8 @@ The steps to get the software installed on a raspberry pi are as follows:
 * Download andd install the application on your mobile phone. Donot open it yet.
 * The steps to install the Chromedriver can be found [here](https://github.com/Arnie09/GLaD_OS/blob/master/PythonBot/src/Raspberry_Pi_Glados_client/Chromedriver_Rasp/installation.md) 
 * Run the bash script to install all necessary python modules required by the python script. **This step may take a lot of time especially in case of a raspberry pi** But donot worry let the installation finish.
-* Next copy paste the boot menu file into the boot folder so that the program auto starts after booting in araspberry pi.
-* after making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
+* Next copy paste the boot menu file into the boot folder so that the program auto starts after booting in raspberry pi.
+* After making sure that you have a google acccount and a youtube acccount with a playlist called my_playlist,run the file called 
   **bot.py**. Open the android app as well.
   
 ###### Setup-of-the-app
@@ -100,6 +104,12 @@ The steps to get the software installed on a raspberry pi are as follows:
   **bot.py**. Open the android app as well.
 * Set up of the app is the same as [this](#Setup-of-the-app)
 
+##### **On Windows with Arduino**
+
+* Download/Clone this repository and copy the folder Windows_Glados_with_arduino
+* Other steps are same as previous windows guide
+* Make sure to keep the laptop/PC connected with the arduino via USB cable in order to fecilitate instruction transfer.
+
 ### How-Glados-works
 
 A breif overview of working of glados has been depicted in the picture below.
@@ -117,6 +127,7 @@ A breif overview of working of glados has been depicted in the picture below.
 * Paho Mqtt Client
 * Native Andoid - Java
 * Dialogflow
+* Sellenium Web Browser
 
 The python module list has been included.
 The software was tested on Raspberry pi 3B+ running raspbian, Linux(Elementry OS), Windows 10.
