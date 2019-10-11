@@ -1,7 +1,7 @@
 # GLaD_OS
 
 A handy personal assistant who talks sharp and turns on your lights and fans and plays you music if you feel lonely.
-GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steampowered.com/app/400/Portal/). But unlike GLaD_OS in the game, this glados will be help you,willingly or unwillingly that is not assured.
+GLaD_OS is actually the AI protagonist of the game [Portal](https://store.steampowered.com/app/400/Portal/). But unlike `GLaD_OS` in the game, this glados will be help you,willingly or unwillingly that is not assured.
 
 **Working Demo video:** [https://www.youtube.com/watch?v=hbyxTZWnGm4&t=65s](https://www.youtube.com/watch?v=hbyxTZWnGm4&t=65s)
 
